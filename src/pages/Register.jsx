@@ -58,7 +58,6 @@ function Register() {
 
     users.push(newUser);
     localStorage.setItem("users", JSON.stringify(users));
-    alert("Registration Successful! Please log in.");
     navigate("/");
   };
 
