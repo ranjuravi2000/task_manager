@@ -47,8 +47,6 @@ function CreateTask() {
       JSON.stringify(tasks)
     );
 
-    alert("Task Created Successfully");
-
     navigate("/dashboard");
   };
 
