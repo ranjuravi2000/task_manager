@@ -8,7 +8,7 @@ function Footer() {
 
           {/* Brand */}
           <div className="col-md-4 mb-3 mb-md-0">
-            <h5 className="fw-bold mb-1">⚡ Taskify</h5>
+            <h5 className="fw-bold mb-1">✔㆜αടƙι⨍ყ</h5>
             <small className="text-white-50">
               Smart Collaborative Task Management System
             </small>

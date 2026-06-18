@@ -10,13 +10,13 @@ function Header({ showNav = false }) {
   };
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-primary px-4 shadow-sm">
+    <nav className="navbar navbar-expand-lg navbar-dark bg-dark px-4 shadow-sm">
       {/* Brand */}
-      <Link className="navbar-brand fw-bold fs-4" to="/dashboard">
-        ⚡ Taskify
+      <Link className="navbar-brand fw-bold fs-4">
+    ✔㆜αടƙι⨍ყ
       </Link>
 
-      <span className="text-white-50 d-none d-md-inline" style={{ fontSize: "13px" }}>
+      <span className="text-white-50 d-none d-md-inline" style={{ fontSize: "18px" }}>
         Smart Collaborative Task Manager
       </span>
 

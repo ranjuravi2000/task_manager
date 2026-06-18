@@ -66,14 +66,14 @@ function Dashboard() {
   return (
     <div className="d-flex flex-column min-vh-100">
 
-      {/* Header with nav */}
+      
       <Header showNav={true} />
 
-      {/* Main Content */}
+     
       <div className="flex-grow-1 bg-light py-4">
         <div className="container">
 
-          {/* Stats */}
+          
           <div className="row mb-4 g-3">
             {[
               { label: "Total Tasks", value: totalTasks, color: "primary" },
@@ -92,7 +92,7 @@ function Dashboard() {
             ))}
           </div>
 
-          {/* Create Task Button */}
+          {/* -------------Create Task Button------------ */}
           <div className="mb-3">
             <button
               className="btn btn-primary"
@@ -102,7 +102,7 @@ function Dashboard() {
             </button>
           </div>
 
-          {/* Search & Filters */}
+          {/* -----Search & Filters ----*/}
           <div className="row mb-4 g-2">
             <div className="col-md-4">
               <input
@@ -138,7 +138,7 @@ function Dashboard() {
             </div>
           </div>
 
-          {/* Task List */}
+          
           <div className="row g-3">
             {filteredTasks.length === 0 ? (
               <div className="text-center py-5 text-muted">
@@ -161,8 +161,8 @@ function Dashboard() {
                       <p className="text-muted small mb-2">{task.description}</p>
 
                       <div className="mb-2" style={{ fontSize: "13px" }}>
-                        <span className="me-3">📁 {task.category}</span>
-                        <span className="me-3">📅 {task.dueDate}</span>
+                        <span className="me-3"> {task.category}</span>
+                        <span className="me-3"> {task.dueDate}</span>
                         <span className={getStatusBadge(task.status)}>{task.status}</span>
                       </div>
 
@@ -204,7 +204,7 @@ function Dashboard() {
         </div>
       </div>
 
-      {/* Footer */}
+     
       <Footer />
 
     </div>
