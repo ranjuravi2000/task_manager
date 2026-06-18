@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-
 function Register() {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
@@ -65,11 +64,7 @@ function Register() {
 
   return (
     <div className="d-flex flex-column min-vh-100">
-
-      {/* Header — no nav links on register page */}
       <Header showNav={false} />
-
-      {/* Main Content */}
       <div className="flex-grow-1 d-flex align-items-center justify-content-center bg-light py-4">
         <div className="col-md-5 col-lg-4 px-3">
           <div className="card shadow">
@@ -170,7 +165,6 @@ function Register() {
         </div>
       </div>
 
-      {/* Footer */}
       <Footer />
 
     </div>

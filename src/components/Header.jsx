@@ -1,5 +1,4 @@
 import { Link, useNavigate } from "react-router-dom";
-
 function Header({ showNav = false }) {
   const navigate = useNavigate();
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
@@ -11,7 +10,7 @@ function Header({ showNav = false }) {
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark px-4 shadow-sm">
-      {/* Brand */}
+      {/* ----logo----- */}
       <Link className="navbar-brand fw-bold fs-4">
     ✔㆜αടƙι⨍ყ
       </Link>
@@ -20,7 +19,6 @@ function Header({ showNav = false }) {
         Smart Collaborative Task Manager
       </span>
 
-      {/* Right side */}
       <div className="ms-auto d-flex align-items-center gap-3">
         {showNav && currentUser && (
           <>

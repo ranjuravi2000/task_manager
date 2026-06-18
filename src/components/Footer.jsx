@@ -1,3 +1,4 @@
+import { Link, useNavigate } from "react-router-dom";
 function Footer() {
   const year = new Date().getFullYear();
 
@@ -6,7 +7,7 @@ function Footer() {
       <div className="container">
         <div className="row align-items-center">
 
-          {/* Brand */}
+          {/*---logo----- */}
           <div className="col-md-4 mb-3 mb-md-0">
             <h5 className="fw-bold mb-1">✔㆜αടƙι⨍ყ</h5>
             <small className="text-white-50">
@@ -14,7 +15,6 @@ function Footer() {
             </small>
           </div>
 
-          {/* Links */}
           <div className="col-md-4 text-center mb-3 mb-md-0">
             <div className="d-flex justify-content-center gap-3">
               <a href="#" className="text-white-50 text-decoration-none" style={{ fontSize: "13px" }}>
@@ -29,7 +29,7 @@ function Footer() {
             </div>
           </div>
 
-          {/* Copyright */}
+          {/* ------------Copyright----- */}
           <div className="col-md-4 text-md-end">
             <small className="text-white-50">
               © {year} Taskify. All rights reserved.

@@ -29,11 +29,9 @@ function Login() {
 
   return (
     <div className="d-flex flex-column min-vh-100">
-
-      {/* Header — no nav links on login page */}
       <Header showNav={false} />
 
-      {/* Main Content */}
+      {/* -------------Main Content----------- */}
       <div className="flex-grow-1 d-flex align-items-center justify-content-center bg-light">
         <div className="col-md-5 col-lg-4 px-3">
           <div className="card shadow">
@@ -76,8 +74,6 @@ function Login() {
           </div>
         </div>
       </div>
-
-      {/* Footer */}
       <Footer />
 
     </div>

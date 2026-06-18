@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-
 function Dashboard() {
   const navigate = useNavigate();
   const [tasks, setTasks] = useState([]);
