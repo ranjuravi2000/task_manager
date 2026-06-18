@@ -1,110 +1,91 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 
 function Register() {
   const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
-  const [username, setUsername] =
-    useState("");
+  const passwordRules = [
+    { label: "At least 8 characters", test: (p) => p.length >= 8 },
+    { label: "At least one uppercase letter", test: (p) => /[A-Z]/.test(p) },
+    { label: "At least one lowercase letter", test: (p) => /[a-z]/.test(p) },
+    { label: "At least one number", test: (p) => /[0-9]/.test(p) },
+    { label: "At least one special character (!@#$%^&*)", test: (p) => /[!@#$%^&*]/.test(p) },
+  ];
 
-  const [email, setEmail] =
-    useState("");
-
-  const [password, setPassword] =
-    useState("");
-
-  const [confirmPassword,
-    setConfirmPassword] =
-    useState("");
-  const [showPassword, setShowPassword] =
-    useState(false);
+  const allRulesPassed = passwordRules.every((rule) => rule.test(password));
 
   const registerUser = () => {
+    const trimmedUsername = username.trim();
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+    const trimmedConfirmPassword = confirmPassword.trim();
 
-    if (
-      !username ||
-      !email ||
-      !password ||
-      !confirmPassword
-    ) {
+    if (!trimmedUsername || !trimmedEmail || !trimmedPassword || !trimmedConfirmPassword) {
       alert("Please fill all fields");
       return;
     }
 
-    if (password !== confirmPassword) {
+    if (!allRulesPassed) {
+      alert("Password does not meet the required conditions");
+      return;
+    }
+
+    if (trimmedPassword !== trimmedConfirmPassword) {
       alert("Passwords do not match");
       return;
     }
 
-    const users =
-      JSON.parse(
-        localStorage.getItem("users")
-      ) || [];
-
-    const existingUser =
-      users.find(
-        (user) =>
-          user.username === username
-      );
-
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+    const existingUser = users.find((user) => user.username === trimmedUsername);
     if (existingUser) {
       alert("Username already exists");
       return;
     }
 
-    users.push({
+    const newUser = {
       id: Date.now(),
-      username,
-      email,
-      password,
+      username: trimmedUsername,
+      email: trimmedEmail,
+      password: trimmedPassword,
       plan: "free",
-    });
+    };
 
-    localStorage.setItem(
-      "users",
-      JSON.stringify(users)
-    );
-
-    alert(
-      "Registration Successful!"
-    );
-
+    users.push(newUser);
+    localStorage.setItem("users", JSON.stringify(users));
+    alert("Registration Successful! Please log in.");
     navigate("/");
   };
 
   return (
-    <div className="container">
-      <div
-        className="row justify-content-center align-items-center"
-        style={{ minHeight: "100vh" }}
-      >
-        <div className="col-md-6 col-lg-5">
+    <div className="d-flex flex-column min-vh-100">
+
+      {/* Header — no nav links on register page */}
+      <Header showNav={false} />
+
+      {/* Main Content */}
+      <div className="flex-grow-1 d-flex align-items-center justify-content-center bg-light py-4">
+        <div className="col-md-5 col-lg-4 px-3">
           <div className="card shadow">
             <div className="card-body p-4">
 
-              <h1 className="text-center fw-bold">
-                Taskify
-              </h1>
-
-              <p className="text-center text-muted mb-4">
-                Smart Collaborative Task
-                Management System
+              <h3 className="text-center fw-bold mb-1">Create Account 🚀</h3>
+              <p className="text-center text-muted mb-4" style={{ fontSize: "13px" }}>
+                Join Taskify and boost your productivity
               </p>
-
-              <h3 className="text-center mb-4">
-                Register
-              </h3>
 
               <input
                 type="text"
                 className="form-control mb-3"
                 placeholder="Username"
                 value={username}
-                onChange={(e) =>
-                  setUsername(
-                    e.target.value
-                  )
-                }
+                onChange={(e) => setUsername(e.target.value)}
               />
 
               <input
@@ -112,42 +93,52 @@ function Register() {
                 className="form-control mb-3"
                 placeholder="Email"
                 value={email}
-                onChange={(e) =>
-                  setEmail(
-                    e.target.value
-                  )
-                }
+                onChange={(e) => setEmail(e.target.value)}
               />
 
               <input
-                type={
-                  showPassword
-                    ? "text"
-                    : "password"
-                }
-                className="form-control mb-3"
+                type={showPassword ? "text" : "password"}
+                className={`form-control mb-1 ${
+                  password ? (allRulesPassed ? "is-valid" : "is-invalid") : ""
+                }`}
                 placeholder="Password"
                 value={password}
-                onChange={(e) =>
-                  setPassword(e.target.value)
-                }
+                onChange={(e) => setPassword(e.target.value)}
               />
 
+              {password && (
+                <ul className="list-unstyled mb-3 ps-1">
+                  {passwordRules.map((rule, index) => (
+                    <li
+                      key={index}
+                      className={`small ${rule.test(password) ? "text-success" : "text-danger"}`}
+                    >
+                      {rule.test(password) ? "✅" : "❌"} {rule.label}
+                    </li>
+                  ))}
+                </ul>
+              )}
+
               <input
-                type={
-                  showPassword
-                    ? "text"
-                    : "password"
-                }
-                className="form-control mb-3"
+                type={showPassword ? "text" : "password"}
+                className={`form-control mb-2 ${
+                  confirmPassword
+                    ? confirmPassword === password
+                      ? "is-valid"
+                      : "is-invalid"
+                    : ""
+                }`}
                 placeholder="Confirm Password"
                 value={confirmPassword}
-                onChange={(e) =>
-                  setConfirmPassword(
-                    e.target.value
-                  )
-                }
+                onChange={(e) => setConfirmPassword(e.target.value)}
               />
+
+              {confirmPassword && confirmPassword !== password && (
+                <p className="small text-danger mb-2">❌ Passwords do not match</p>
+              )}
+              {confirmPassword && confirmPassword === password && (
+                <p className="small text-success mb-2">✅ Passwords match</p>
+              )}
 
               <div className="form-check mb-3">
                 <input
@@ -155,38 +146,33 @@ function Register() {
                   type="checkbox"
                   id="showPassword"
                   checked={showPassword}
-                  onChange={() =>
-                    setShowPassword(
-                      !showPassword
-                    )
-                  }
+                  onChange={() => setShowPassword(!showPassword)}
                 />
-
-                <label
-                  className="form-check-label"
-                  htmlFor="showPassword"
-                >
+                <label className="form-check-label" htmlFor="showPassword">
                   Show Password
                 </label>
               </div>
+
               <button
                 className="btn btn-success w-100"
                 onClick={registerUser}
+                disabled={!allRulesPassed || confirmPassword !== password}
               >
                 Register
               </button>
 
-              <p className="mt-3 text-center">
-                Already have an account?{" "}
-                <Link to="/">
-                  Login
-                </Link>
+              <p className="mt-3 text-center" style={{ fontSize: "13px" }}>
+                Already have an account? <Link to="/">Login</Link>
               </p>
 
             </div>
           </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <Footer />
+
     </div>
   );
 }

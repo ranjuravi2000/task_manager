@@ -1,33 +1,26 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 
 function Login() {
   const navigate = useNavigate();
-
-  const [username, setUsername] =
-    useState("");
-
-  const [password, setPassword] =
-    useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleLogin = () => {
-    const users =
-      JSON.parse(
-        localStorage.getItem("users")
-      ) || [];
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+    const trimmedInput = username.trim();
+    const trimmedPassword = password.trim();
 
     const user = users.find(
       (u) =>
-        u.username === username &&
-        u.password === password
+        (u.username === trimmedInput || u.email === trimmedInput) &&
+        u.password === trimmedPassword
     );
 
     if (user) {
-      localStorage.setItem(
-        "currentUser",
-        JSON.stringify(user)
-      );
-
+      localStorage.setItem("currentUser", JSON.stringify(user));
       navigate("/dashboard");
     } else {
       alert("Invalid Credentials");
@@ -35,35 +28,28 @@ function Login() {
   };
 
   return (
-    <div className="container">
-      <div
-        className="row justify-content-center align-items-center"
-        style={{ minHeight: "100vh" }}
-      >
-        <div className="col-md-6 col-lg-5">
+    <div className="d-flex flex-column min-vh-100">
+
+      {/* Header — no nav links on login page */}
+      <Header showNav={false} />
+
+      {/* Main Content */}
+      <div className="flex-grow-1 d-flex align-items-center justify-content-center bg-light">
+        <div className="col-md-5 col-lg-4 px-3">
           <div className="card shadow">
             <div className="card-body p-4">
 
-              <h1 className="text-center fw-bold">
-                Taskify
-              </h1>
-
-              <p className="text-center text-muted mb-4">
-                Smart Collaborative Task Management System
+              <h3 className="text-center fw-bold mb-1">Welcome Back 👋</h3>
+              <p className="text-center text-muted mb-4" style={{ fontSize: "13px" }}>
+                Login to manage your tasks
               </p>
-
-              <h3 className="text-center mb-4">
-                Login
-              </h3>
 
               <input
                 type="text"
                 className="form-control mb-3"
-                placeholder="Username"
+                placeholder="Username or Email"
                 value={username}
-                onChange={(e) =>
-                  setUsername(e.target.value)
-                }
+                onChange={(e) => setUsername(e.target.value)}
               />
 
               <input
@@ -71,9 +57,7 @@ function Login() {
                 className="form-control mb-3"
                 placeholder="Password"
                 value={password}
-                onChange={(e) =>
-                  setPassword(e.target.value)
-                }
+                onChange={(e) => setPassword(e.target.value)}
               />
 
               <button
@@ -83,17 +67,19 @@ function Login() {
                 Login
               </button>
 
-              <p className="mt-3 text-center">
+              <p className="mt-3 text-center" style={{ fontSize: "13px" }}>
                 Don't have an account?{" "}
-                <Link to="/register">
-                  Register
-                </Link>
+                <Link to="/register">Register</Link>
               </p>
 
             </div>
           </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <Footer />
+
     </div>
   );
 }
