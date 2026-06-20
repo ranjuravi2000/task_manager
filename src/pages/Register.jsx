@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
+
 function Register() {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
@@ -69,11 +71,16 @@ function Register() {
           <div className="card shadow">
             <div className="card-body p-4">
 
-              <h3 className="text-center fw-bold mb-1">Create Account ✔</h3>
+              <h3 className="text-center fw-bold mb-1">
+                Create Account <FaCheckCircle className="text-success" />
+              </h3>
               <p className="text-center text-muted mb-4" style={{ fontSize: "13px" }}>
                 Join Taskify and boost your productivity
               </p>
-
+              
+              <label className="form-label fw-semibold mb-1">
+                Username <span className="text-danger">*</span>
+              </label>
               <input
                 type="text"
                 className="form-control mb-3"
@@ -82,6 +89,9 @@ function Register() {
                 onChange={(e) => setUsername(e.target.value)}
               />
 
+              <label className="form-label fw-semibold mb-1">
+                Email <span className="text-danger">*</span>
+              </label>
               <input
                 type="email"
                 className="form-control mb-3"
@@ -90,6 +100,9 @@ function Register() {
                 onChange={(e) => setEmail(e.target.value)}
               />
 
+              <label className="form-label fw-semibold mb-1">
+                Password <span className="text-danger">*</span>
+              </label>
               <input
                 type={showPassword ? "text" : "password"}
                 className={`form-control mb-1 ${
@@ -107,12 +120,20 @@ function Register() {
                       key={index}
                       className={`small ${rule.test(password) ? "text-success" : "text-danger"}`}
                     >
-                      {rule.test(password) ? "✅" : "❌"} {rule.label}
+                      {rule.test(password) ? (
+                        <FaCheckCircle className="me-1" />
+                      ) : (
+                        <FaTimesCircle className="me-1" />
+                      )}{" "}
+                      {rule.label}
                     </li>
                   ))}
                 </ul>
               )}
 
+              <label className="form-label fw-semibold mb-1">
+                Confirm Password <span className="text-danger">*</span>
+              </label>
               <input
                 type={showPassword ? "text" : "password"}
                 className={`form-control mb-2 ${
@@ -128,10 +149,16 @@ function Register() {
               />
 
               {confirmPassword && confirmPassword !== password && (
-                <p className="small text-danger mb-2">❌ Passwords do not match</p>
+                <p className="small text-danger mb-2">
+                  <FaTimesCircle className="me-1" />
+                  Passwords do not match
+                </p>
               )}
               {confirmPassword && confirmPassword === password && (
-                <p className="small text-success mb-2">✅ Passwords match</p>
+                <p className="small text-success mb-2">
+                  <FaCheckCircle className="me-1" />
+                  Passwords match
+                </p>
               )}
 
               <div className="form-check mb-3">

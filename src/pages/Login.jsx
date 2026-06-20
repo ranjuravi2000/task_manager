@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import { FaCheckCircle } from "react-icons/fa";
 
 function Login() {
   const navigate = useNavigate();
@@ -37,7 +38,9 @@ function Login() {
           <div className="card shadow">
             <div className="card-body p-4">
 
-              <h3 className="text-center fw-bold mb-1">Welcome Back✔</h3>
+              <h3 className="text-center fw-bold mb-1">
+                Welcome Back <FaCheckCircle className="text-success" />
+              </h3>
               <p className="text-center text-muted mb-4" style={{ fontSize: "13px" }}>
                 Login to manage your tasks
               </p>
