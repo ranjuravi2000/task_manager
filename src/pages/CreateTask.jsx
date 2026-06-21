@@ -89,9 +89,7 @@ function CreateTask() {
       !dueDate ||
       !category
     ) {
-      alert(
-        "Please fill all required fields (Title, Description, Category, Due Date)"
-      );
+     
       return;
     }
 
@@ -135,13 +133,7 @@ function CreateTask() {
         "collaborationRequests",
         JSON.stringify([...existingRequests, ...newRequests])
       );
-
-      alert(
-        `Task created! Collaboration requests sent to: ${participants.join(", ")}`
-      );
-    } else {
-      alert("Task created successfully");
-    }
+    } 
 
     navigate("/dashboard");
   };

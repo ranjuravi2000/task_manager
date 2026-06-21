@@ -57,10 +57,10 @@ function Dashboard() {
     const updatedTasks = tasks.map((task) =>
       task.id === id
         ? {
-            ...task,
-            status: task.status === "Completed" ? "Pending" : "Completed",
-            progress: task.status === "Completed" ? 0 : 100,
-          }
+          ...task,
+          status: task.status === "Completed" ? "Pending" : "Completed",
+          progress: task.status === "Completed" ? 0 : 100,
+        }
         : task
     );
     saveTasks(updatedTasks);
@@ -109,7 +109,7 @@ function Dashboard() {
     const matchesStatus =
       statusFilter === "All" || task.status === statusFilter;
 
-    
+
     let matchesOwnership = true;
     if (ownershipFilter === "My Tasks") {
       matchesOwnership = task.createdBy === currentUser.username;
@@ -138,14 +138,22 @@ function Dashboard() {
       <div className="flex-grow-1 bg-light py-4">
         <div className="container">
 
-          {/* -------------------- Plan ------------------*/}
+          {/* -------------------- Back + Plan ------------------*/}
           <div className="d-flex justify-content-between align-items-center mb-1 flex-wrap gap-2">
-            <span
-              className={`border border-${planInfo.color} text-${planInfo.color} fw-semibold px-3 py-1`}
-              style={{ fontSize: "12px", borderRadius: "20px", letterSpacing: "0.5px" }}
-            >
-              {planInfo.label.toUpperCase()} PLAN
-            </span>
+            <div className="d-flex align-items-center gap-2 flex-wrap">
+              <button
+                className="btn btn-outline-secondary btn-sm"
+                onClick={() => navigate("/")}
+              >
+                ← Back
+              </button>
+              <span
+                className={`border border-${planInfo.color} text-${planInfo.color} fw-semibold px-3 py-1`}
+                style={{ fontSize: "12px", borderRadius: "20px", letterSpacing: "0.5px" }}
+              >
+                {planInfo.label.toUpperCase()} PLAN
+              </span>
+            </div>
             {userPlan !== "ultimate" && (
               <button
                 className="btn btn-sm btn-link text-decoration-none p-0"
@@ -162,25 +170,24 @@ function Dashboard() {
           {/* ----------user dashborad status-------*/}
           <div className="row mb-4 g-3">
             {[
-              { label: "Total Tasks",  value: totalTasks,      color: "primary" },
-              { label: "My Tasks",     value: myOwnTasks,      color: "info"    },
-              { label: "Shared",       value: sharedTasks,     color: "purple"  },
-              { label: "Completed",    value: completedTasks,  color: "success" },
-              { label: "Pending",      value: pendingTasks,    color: "warning" },
-              { label: "Overdue",      value: overdueTasks,    color: "danger"  },
+              { label: "Total Tasks", value: totalTasks, color: "primary" },
+              { label: "My Tasks", value: myOwnTasks, color: "info" },
+              { label: "Shared", value: sharedTasks, color: "purple" },
+              { label: "Completed", value: completedTasks, color: "success" },
+              { label: "Pending", value: pendingTasks, color: "warning" },
+              { label: "Overdue", value: overdueTasks, color: "danger" },
             ].map((stat) => (
               <div className="col-6 col-md-2" key={stat.label}>
                 <div
                   className={`card text-center shadow-sm h-100`}
                   style={{
-                    borderTop: `4px solid ${
-                      stat.color === "purple" ? "#7c3aed" :
-                      stat.color === "primary" ? "#0d6efd" :
-                      stat.color === "info"    ? "#0dcaf0" :
-                      stat.color === "success" ? "#16a34a" :
-                      stat.color === "warning" ? "#d97706" :
-                      "#dc2626"
-                    }`
+                    borderTop: `4px solid ${stat.color === "purple" ? "#7c3aed" :
+                        stat.color === "primary" ? "#0d6efd" :
+                          stat.color === "info" ? "#0dcaf0" :
+                            stat.color === "success" ? "#16a34a" :
+                              stat.color === "warning" ? "#d97706" :
+                                "#dc2626"
+                      }`
                   }}
                 >
                   <div className="card-body py-3 px-2">
@@ -190,11 +197,11 @@ function Dashboard() {
                         fontSize: "11px",
                         color:
                           stat.color === "purple" ? "#7c3aed" :
-                          stat.color === "primary" ? "#0d6efd" :
-                          stat.color === "info"    ? "#0891b2" :
-                          stat.color === "success" ? "#16a34a" :
-                          stat.color === "warning" ? "#d97706" :
-                          "#dc2626"
+                            stat.color === "primary" ? "#0d6efd" :
+                              stat.color === "info" ? "#0891b2" :
+                                stat.color === "success" ? "#16a34a" :
+                                  stat.color === "warning" ? "#d97706" :
+                                    "#dc2626"
                       }}
                     >
                       {stat.label}
@@ -247,7 +254,15 @@ function Dashboard() {
               className="btn btn-outline-primary"
               onClick={() => navigate("/taskpilot")}
             >
-               TaskPilot AI
+              TaskPilot AI
+            </button>
+            <button
+              className="btn btn-outline-success"
+              onClick={() =>
+                navigate("/team-performance-ai")
+              }
+            >
+              🤖 Team Performance AI
             </button>
           </div>
 
@@ -260,9 +275,9 @@ function Dashboard() {
             <div className="card-body d-flex justify-content-between align-items-center py-3 bg-primary">
               <div>
                 <h6 className="fw-bold mb-1 text-white">
-                   TaskPilot AI — Intelligent Task Coach
+                  TaskPilot AI — Intelligent Task Coach
                 </h6>
-                <p className="text-muted small mb-0">
+                <p className="text-white small mb-0">
                   Get AI-style suggestions and a recovery plan for your most at-risk task
                 </p>
               </div>
@@ -282,7 +297,7 @@ function Dashboard() {
               />
             </div>
 
-           
+
             <div className="col-md-3">
               <select
                 className="form-select"
@@ -321,7 +336,7 @@ function Dashboard() {
             </div>
           </div>
 
-          
+
           {(ownershipFilter !== "All" || priorityFilter !== "All" || statusFilter !== "All" || search) && (
             <div className="d-flex align-items-center gap-2 mb-3 flex-wrap">
               <small className="text-muted">Showing {filteredTasks.length} of {totalTasks} tasks</small>
@@ -396,11 +411,10 @@ function Dashboard() {
                           </div>
                           <div className="progress" style={{ height: "8px" }}>
                             <div
-                              className={`progress-bar ${
-                                (task.progress || 0) === 100
+                              className={`progress-bar ${(task.progress || 0) === 100
                                   ? "bg-success"
                                   : "bg-primary"
-                              }`}
+                                }`}
                               role="progressbar"
                               style={{ width: `${task.progress || 0}%` }}
                             />
@@ -450,11 +464,10 @@ function Dashboard() {
                         {/* Action Buttons */}
                         <div className="d-flex gap-2 flex-wrap">
                           <button
-                            className={`btn btn-sm ${
-                              task.status === "Completed"
+                            className={`btn btn-sm ${task.status === "Completed"
                                 ? "btn-secondary"
                                 : "btn-success"
-                            }`}
+                              }`}
                             onClick={() => toggleComplete(task.id)}
                           >
                             {task.status === "Completed" ? "↩ Undo" : "✓ Complete"}

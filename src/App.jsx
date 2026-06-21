@@ -7,7 +7,8 @@ import TaskDetails from "./pages/TaskDetails";
 import CollaborationRequests from "./pages/CollaborationRequests";
 import SentRequests from "./pages/SentRequests";
 import Profile from "./pages/Profile";
-// import TaskPilotAI from "./pages/TaskPilotAI";
+import TaskPilotAI from "./pages/TaskPilotAI";
+import TeamPerformanceAI from "./pages/TeamPerformanceAI";
 import Pricing from "./pages/Pricing";
 import Checkout from "./pages/Checkout";
 
@@ -33,10 +34,14 @@ function App() {
                 />
                 <Route path="/collaboration-requests" element={<CollaborationRequests />} />
                 <Route path="/sent-requests" element={<SentRequests />} />
-                {/* <Route path="/taskpilot" element={<TaskPilotAI />} /> */}
+                <Route path="/taskpilot" element={<TaskPilotAI />} />
                 <Route path="/pricing" element={<Pricing />} />
                 <Route path="/checkout/:planId" element={<Checkout />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route
+                    path="/team-performance-ai"
+                    element={<TeamPerformanceAI />}
+                />
 
             </Routes>
         </BrowserRouter>
