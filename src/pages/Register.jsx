@@ -7,42 +7,63 @@ import {
   FaTimesCircle,
 } from "react-icons/fa";
 
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
+
+const usernameRegex =
+  /^[A-Za-z][A-Za-z_ ]*$/;
+
+const validationSchema = Yup.object({
+  username: Yup.string()
+    .matches(
+      usernameRegex,
+      "Only letters, spaces and underscores are allowed"
+    )
+    .required("Username is required"),
+
+  email: Yup.string()
+    .email("Invalid email format")
+    .required("Email is required"),
+
+  password: Yup.string()
+    .min(
+      8,
+      "Password must be at least 8 characters"
+    )
+    .matches(
+      /[A-Z]/,
+      "Must contain one uppercase letter"
+    )
+    .matches(
+      /[a-z]/,
+      "Must contain one lowercase letter"
+    )
+    .matches(
+      /[0-9]/,
+      "Must contain one number"
+    )
+    .matches(
+      /[!@#$%^&*]/,
+      "Must contain one special character"
+    )
+    .required("Password is required"),
+
+  confirmPassword: Yup.string()
+    .oneOf(
+      [Yup.ref("password")],
+      "Passwords do not match"
+    )
+    .required("Confirm Password is required"),
+});
+
 function Register() {
   const navigate = useNavigate();
 
-  const [username, setUsername] = useState("");
-  const [usernameTouched, setUsernameTouched] =
-    useState(false);
-
-  const [email, setEmail] = useState("");
-  const [emailTouched, setEmailTouched] =
-    useState(false);
-
-  const [password, setPassword] = useState("");
-  const [passwordFocused, setPasswordFocused] =
-    useState(false);
-
-  const [confirmPassword, setConfirmPassword] =
-    useState("");
-
   const [showPassword, setShowPassword] =
     useState(false);
-  const [passwordTouched, setPasswordTouched] =
+
+  const [passwordFocused, setPasswordFocused] =
     useState(false);
-
-  const usernameRegex = /^[A-Za-z_ ]+$/;
-
-  const validateEmail = (email) => {
-    return /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(
-      email.trim()
-    );
-  };
-
-  const usernameError =
-    username &&
-      !usernameRegex.test(username)
-      ? "Only letters, spaces and underscore allowed"
-      : "";
 
   const passwordRules = [
     {
@@ -62,83 +83,45 @@ function Register() {
       test: (p) => /[0-9]/.test(p),
     },
     {
-      label:
-        "At least one special character (!@#$%^&*)",
+      label: "At least one special character",
       test: (p) =>
         /[!@#$%^&*]/.test(p),
     },
   ];
 
-  const allRulesPassed =
-    passwordRules.every((rule) =>
-      rule.test(password)
-    );
-
-  const registerUser = () => {
-    const trimmedUsername =
-      username.trim();
-
-    const trimmedEmail =
-      email.trim();
-
-    const trimmedPassword =
-      password.trim();
-
-    const trimmedConfirmPassword =
-      confirmPassword.trim();
-
-    if (
-      !trimmedUsername ||
-      !trimmedEmail ||
-      !trimmedPassword ||
-      !trimmedConfirmPassword
-    ) {
-
-      return;
-    }
-
-    if (!usernameRegex.test(trimmedUsername)) {
-
-      return;
-    }
-
-    if (!validateEmail(trimmedEmail)) {
-
-      return;
-    }
-
-    if (!allRulesPassed) {
-      return;
-    }
-
-    if (
-      trimmedPassword !==
-      trimmedConfirmPassword
-    ) {
-
-    }
-
+  const registerUser = (values) => {
     const users =
       JSON.parse(
         localStorage.getItem("users")
       ) || [];
 
     const existingUser = users.find(
-      (user) =>
-        user.username.toLowerCase() ===
-        trimmedUsername.toLowerCase()
+      (user) => {
+        const storedUsername =
+          (user.username || "").toLowerCase();
+
+        const storedEmail =
+          (user.email || "").toLowerCase();
+
+        return (
+          storedUsername ===
+          values.username
+            .trim()
+            .toLowerCase() ||
+
+          storedEmail ===
+          values.email
+            .trim()
+            .toLowerCase()
+        );
+      }
     );
-
-    if (existingUser) {
-
-      return;
-    }
 
     const newUser = {
       id: Date.now(),
-      username: trimmedUsername,
-      email: trimmedEmail,
-      password: trimmedPassword,
+      username: values.username.trim(),
+      email: values.email.trim(),
+      password: values.password.trim(),
       plan: "free",
     };
 
@@ -157,282 +140,210 @@ function Register() {
       <Header showNav={false} />
 
       <div className="flex-grow-1 d-flex align-items-center justify-content-center bg-light py-4">
-        <div className="col-md-5 col-lg-4 px-3">
+
+        <div className="col-md-6 col-lg-5 px-3">
 
           <div className="card shadow border-0">
             <div className="card-body p-4">
 
               <h3 className="text-center fw-bold mb-1">
                 Create Account{" "}
-                <FaCheckCircle className="text-primary" />
+                <FaCheckCircle
+                  style={{
+                    color: "#3AAFA9",
+                  }}
+                />
               </h3>
 
-              <p
-                className="text-center text-muted mb-4"
-                style={{
-                  fontSize: "13px",
-                }}
-              >
-                Join Taskify and boost your
-                productivity
+              <p className="text-center text-muted mb-4">
+                Join Taskify and boost your productivity
               </p>
 
-              {/*---------------- Username -------------------*/}
-
-              <label className="form-label fw-semibold">
-                Username
-                <span className="text-danger">
-                  {" "}
-                  *
-                </span>
-              </label>
-
-              <input
-                type="text"
-                className={`form-control ${usernameTouched &&
-                  usernameError
-                  ? "is-invalid"
-                  : usernameTouched &&
-                    username &&
-                    !usernameError
-                    ? "is-valid"
-                    : ""
-                  }`}
-                placeholder=""
-                value={username}
-                onBlur={() =>
-                  setUsernameTouched(true)
-                }
-                onChange={(e) =>
-                  setUsername(
-                    e.target.value
-                  )
-                }
-              />
-
-              {usernameTouched &&
-                usernameError && (
-                  <div className="invalid-feedback d-block">
-                    {usernameError}
-                  </div>
-                )}
-
-              {/* --------------Email-------------- */}
-
-              <label className="form-label fw-semibold mt-3">
-                Email
-                <span className="text-danger">
-                  {" "}
-                  *
-                </span>
-              </label>
-
-              <input
-                type="email"
-                className={`form-control ${emailTouched &&
-                  email &&
-                  !validateEmail(email)
-                  ? "is-invalid"
-                  : emailTouched &&
-                    email &&
-                    validateEmail(
-                      email
-                    )
-                    ? "is-valid"
-                    : ""
-                  }`}
-                placeholder=""
-                value={email}
-                onBlur={() =>
-                  setEmailTouched(true)
-                }
-                onChange={(e) =>
-                  setEmail(
-                    e.target.value
-                  )
-                }
-              />
-
-              {emailTouched &&
-                email &&
-                !validateEmail(email) && (
-                  <div className="invalid-feedback d-block">
-                    Please enter a valid email
-                    address
-                  </div>
-                )}
-
-              {/*-------------- Password----------------- */}
-
-              <label className="form-label fw-semibold mt-3">
-                Password
-                <span className="text-danger">
-                  {" "}
-                  *
-                </span>
-              </label>
-
-              <div className="position-relative">
-
-                <input
-                  type={showPassword ? "text" : "password"}
-                  className={`form-control ${password && allRulesPassed
-                    ? "is-valid"
-                    : ""
-                    }`}
-                  placeholder=" "
-                  value={password}
-                  onFocus={() =>
-                    setPasswordFocused(true)
-                  }
-                  onBlur={() =>
-                    setTimeout(
-                      () => setPasswordFocused(false),
-                      150
-                    )
-                  }
-                  onChange={(e) =>
-                    setPassword(e.target.value)
-                  }
-
-                />
-
-                {passwordFocused && (
-                  <div
-                    className="card shadow-sm position-absolute w-100 mt-2"
-                    style={{
-                      zIndex: 1000,
-                    }}
-                  >
-                    <div className="card-body py-2">
-
-                      {passwordRules.map(
-                        (
-                          rule,
-                          index
-                        ) => (
-                          <div
-                            key={index}
-                            className={`small mb-1 ${rule.test(
-                              password
-                            )
-                              ? "text-success"
-                              : "text-danger"
-                              }`}
-                          >
-                            {rule.test(
-                              password
-                            ) ? (
-                              <FaCheckCircle className="me-1" />
-                            ) : (
-                              <FaTimesCircle className="me-1" />
-                            )}
-
-                            {rule.label}
-                          </div>
-                        )
-                      )}
-
-                    </div>
-                  </div>
-                )}
-
-              </div>
-
-              {/*-------------- Confirm Password -------------*/}
-
-              <label className="form-label fw-semibold mt-3">
-                Confirm Password
-                <span className="text-danger">
-                  {" "}
-                  *
-                </span>
-              </label>
-
-              <input
-                type={
-                  showPassword
-                    ? "text"
-                    : "password"
-                }
-                className={`form-control ${confirmPassword
-                  ? confirmPassword ===
-                    password
-                    ? "is-valid"
-                    : "is-invalid"
-                  : ""
-                  }`}
-                placeholder=" "
-                value={confirmPassword}
-                onChange={(e) =>
-                  setConfirmPassword(
-                    e.target.value
-                  )
-                }
-              />
-
-              {confirmPassword && (
-                <div
-                  className={`small mt-1 ${confirmPassword ===
-                    password
-                    ? "text-success"
-                    : "text-danger"
-                    }`}
-                >
-                  {confirmPassword ===
-                    password ? (
-                    <>
-                      <FaCheckCircle className="me-1" />
-                      Passwords match
-                    </>
-                  ) : (
-                    <>
-                      <FaTimesCircle className="me-1" />
-                      Passwords do not match
-                    </>
-                  )}
-                </div>
-              )}
-
-              <div className="form-check mt-3">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  checked={showPassword}
-                  onChange={() =>
-                    setShowPassword(
-                      !showPassword
-                    )
-                  }
-                  id="showPassword"
-                />
-
-                <label
-                  className="form-check-label"
-                  htmlFor="showPassword"
-                >
-                  Show Password
-                </label>
-              </div>
-
-              <button
-                className="btn btn-primary w-100 mt-4"
-                onClick={registerUser}
-                disabled={
-                  !allRulesPassed ||
-                  confirmPassword !==
-                  password
-                }
-              >
-                Register
-              </button>
-
-              <p
-                className="mt-3 text-center"
-                style={{
-                  fontSize: "13px",
+              <Formik
+                initialValues={{
+                  username: "",
+                  email: "",
+                  password: "",
+                  confirmPassword: "",
                 }}
+                validationSchema={
+                  validationSchema
+                }
+                onSubmit={registerUser}
               >
+                {({
+                  values,
+                  touched,
+                  errors,
+                }) => (
+                  <Form>
+
+                    {/* Username */}
+                    <label className="form-label fw-semibold">
+                      Username *
+                    </label>
+
+                    <Field
+                      name="username"
+                      className={`form-control ${touched.username &&
+                          errors.username
+                          ? "is-invalid"
+                          : touched.username
+                            ? "is-valid"
+                            : ""
+                        }`}
+                    />
+
+                    <ErrorMessage
+                      name="username"
+                      component="div"
+                      className="text-danger small mb-3"
+                    />
+
+                    {/* Email */}
+                    <label className="form-label fw-semibold">
+                      Email *
+                    </label>
+
+                    <Field
+                      type="email"
+                      name="email"
+                      className={`form-control ${touched.email &&
+                          errors.email
+                          ? "is-invalid"
+                          : touched.email
+                            ? "is-valid"
+                            : ""
+                        }`}
+                    />
+
+                    <ErrorMessage
+                      name="email"
+                      component="div"
+                      className="text-danger small mb-3"
+                    />
+
+                    {/* Password */}
+                    <div
+                      className="position-relative"
+                    >
+                      <label className="form-label fw-semibold">
+                        Password *
+                      </label>
+
+                      <Field
+                        type={
+                          showPassword
+                            ? "text"
+                            : "password"
+                        }
+                        name="password"
+                        className="form-control"
+                        onFocus={() =>
+                          setPasswordFocused(
+                            true
+                          )
+                        }
+                        onBlur={() =>
+                          setPasswordFocused(
+                            false
+                          )
+                        }
+                      />
+
+                      {passwordFocused && (
+                        <div className="password-popup">
+                          <ul className="list-unstyled mb-0">
+                            {passwordRules.map(
+                              (
+                                rule,
+                                index
+                              ) => (
+                                <li
+                                  key={index}
+                                  className={
+                                    rule.test(
+                                      values.password
+                                    )
+                                      ? "text-success"
+                                      : "text-danger"
+                                  }
+                                >
+                                  {rule.test(
+                                    values.password
+                                  ) ? (
+                                    <FaCheckCircle />
+                                  ) : (
+                                    <FaTimesCircle />
+                                  )}
+                                  {" "}
+                                  {rule.label}
+                                </li>
+                              )
+                            )}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+
+                    <ErrorMessage
+                      name="password"
+                      component="div"
+                      className="text-danger small mb-3"
+                    />
+
+                    {/* Confirm Password */}
+                    <label className="form-label fw-semibold">
+                      Confirm Password *
+                    </label>
+
+                    <Field
+                      type={
+                        showPassword
+                          ? "text"
+                          : "password"
+                      }
+                      name="confirmPassword"
+                      className="form-control"
+                    />
+
+                    <ErrorMessage
+                      name="confirmPassword"
+                      component="div"
+                      className="text-danger small mb-3"
+                    />
+
+                    <div className="form-check mb-3">
+                      <input
+                        type="checkbox"
+                        className="form-check-input"
+                        checked={
+                          showPassword
+                        }
+                        onChange={() =>
+                          setShowPassword(
+                            !showPassword
+                          )
+                        }
+                      />
+
+                      <label className="form-check-label">
+                        Show Password
+                      </label>
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="btn btn-primary w-100"
+                    >
+                      Register
+                    </button>
+
+                  </Form>
+                )}
+              </Formik>
+
+              <p className="mt-3 text-center">
                 Already have an account?{" "}
                 <Link to="/">
                   Login
@@ -443,10 +354,12 @@ function Register() {
           </div>
 
         </div>
+
       </div>
 
       <Footer />
     </div>
   );
 }
+
 export default Register
