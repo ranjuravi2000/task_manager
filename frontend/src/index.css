@@ -1,0 +1,73 @@
+
+:root {
+  --bs-primary:#08a69e;
+  --bs-primary-rgb: 152, 201, 163;
+}
+.btn-primary {
+  background-color: #36a19c !important;
+  border-color:#36a19c !important;
+  color: white !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+  background-color:#36a19c !important;
+  border-color: #36a19c !important;
+  color: white !important;
+}
+
+
+.text-primary {
+  color: #36a19c !important;
+}
+
+.bg-primary {
+  background-color:#36a19c!important;
+}
+
+.border-primary {
+  border-color: #08a69e!important;
+}
+
+
+.btn-link,
+.link-primary {
+  color: #08a69e !important;
+}
+
+
+
+.password-popup {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  width: 320px;
+
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 10px;
+
+  padding: 12px;
+
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+
+  z-index: 9999;
+}
+
+.password-popup::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: 20px;
+
+  width: 15px;
+  height: 15px;
+
+  background: white;
+
+  border-left: 1px solid #dee2e6;
+  border-top: 1px solid #dee2e6;
+
+  transform: rotate(45deg);
+}
