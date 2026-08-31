@@ -23,7 +23,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/tasks", taskRoutes);
 
-// Test route
+// Testing route-----------
 app.get("/", (req, res) => {
   res.json({
     message: "Taskify Backend API is running",
@@ -34,5 +34,5 @@ app.get("/", (req, res) => {
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server running`);
 });
