@@ -65,7 +65,7 @@ const loginUser = async (req, res) => {
       });
     }
 
-    // Compare password---------
+    // Comparing password---------
     const isPasswordMatch = await user.comparePassword(password);
 
     if (!isPasswordMatch) {

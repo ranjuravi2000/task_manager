@@ -9,6 +9,7 @@ import {
 
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import API from "../api/axiosInstance";
 
 const usernameRegex =
   /^[A-Za-z][A-Za-z_ ]*$/;
@@ -65,6 +66,15 @@ function Register() {
   const [passwordFocused, setPasswordFocused] =
     useState(false);
 
+  const [registerError, setRegisterError] =
+    useState("");
+
+  const [successMessage, setSuccessMessage] =
+    useState("");
+
+  const [loading, setLoading] =
+    useState(false);
+
   const passwordRules = [
     {
       label: "At least 8 characters",
@@ -89,50 +99,50 @@ function Register() {
     },
   ];
 
-  const registerUser = (values) => {
-    const users =
-      JSON.parse(
-        localStorage.getItem("users")
-      ) || [];
+  const registerUser = async (values) => {
+    setRegisterError("");
+    setSuccessMessage("");
+    setLoading(true);
 
-    const existingUser = users.find(
-      (user) => {
-        const storedUsername =
-          (user.username || "").toLowerCase();
+    try {
+      const username = values.username.trim();
+      const email = values.email.trim();
+      const password = values.password.trim();
 
-        const storedEmail =
-          (user.email || "").toLowerCase();
+      //------------ Send registration request to backend-------------//
+      const response = await API.post("/auth/register", {
+        name: username,
+        email,
+        password,
+      });
 
-        return (
-          storedUsername ===
-          values.username
-            .trim()
-            .toLowerCase() ||
+      console.log("Registration response:", response.data);
 
-          storedEmail ===
-          values.email
-            .trim()
-            .toLowerCase()
+      setSuccessMessage(
+        "Registration successful! Redirecting to login..."
+      );
+
+      //---------------- Go to login page after successful registration-----------//
+      setTimeout(() => {
+        navigate("/");
+      }, 1500);
+
+    } catch (error) {
+      console.error("Registration error:", error);
+
+      if (error.response) {
+        setRegisterError(
+          error.response.data.message ||
+          "Registration failed. Please try again."
+        );
+      } else {
+        setRegisterError(
+          "Unable to connect to the server. Please try again."
         );
       }
-    );
-
-    const newUser = {
-      id: Date.now(),
-      username: values.username.trim(),
-      email: values.email.trim(),
-      password: values.password.trim(),
-      plan: "free",
-    };
-
-    users.push(newUser);
-
-    localStorage.setItem(
-      "users",
-      JSON.stringify(users)
-    );
-
-    navigate("/");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -166,9 +176,7 @@ function Register() {
                   password: "",
                   confirmPassword: "",
                 }}
-                validationSchema={
-                  validationSchema
-                }
+                validationSchema={validationSchema}
                 onSubmit={registerUser}
               >
                 {({
@@ -185,13 +193,14 @@ function Register() {
 
                     <Field
                       name="username"
-                      className={`form-control ${touched.username &&
-                          errors.username
+                      className={`form-control ${
+                        touched.username &&
+                        errors.username
                           ? "is-invalid"
                           : touched.username
-                            ? "is-valid"
-                            : ""
-                        }`}
+                          ? "is-valid"
+                          : ""
+                      }`}
                     />
 
                     <ErrorMessage
@@ -208,13 +217,14 @@ function Register() {
                     <Field
                       type="email"
                       name="email"
-                      className={`form-control ${touched.email &&
-                          errors.email
+                      className={`form-control ${
+                        touched.email &&
+                        errors.email
                           ? "is-invalid"
                           : touched.email
-                            ? "is-valid"
-                            : ""
-                        }`}
+                          ? "is-valid"
+                          : ""
+                      }`}
                     />
 
                     <ErrorMessage
@@ -224,9 +234,7 @@ function Register() {
                     />
 
                     {/* Password */}
-                    <div
-                      className="position-relative"
-                    >
+                    <div className="position-relative">
                       <label className="form-label fw-semibold">
                         Password *
                       </label>
@@ -240,14 +248,10 @@ function Register() {
                         name="password"
                         className="form-control"
                         onFocus={() =>
-                          setPasswordFocused(
-                            true
-                          )
+                          setPasswordFocused(true)
                         }
                         onBlur={() =>
-                          setPasswordFocused(
-                            false
-                          )
+                          setPasswordFocused(false)
                         }
                       />
 
@@ -255,10 +259,7 @@ function Register() {
                         <div className="password-popup">
                           <ul className="list-unstyled mb-0">
                             {passwordRules.map(
-                              (
-                                rule,
-                                index
-                              ) => (
+                              (rule, index) => (
                                 <li
                                   key={index}
                                   className={
@@ -313,13 +314,12 @@ function Register() {
                       className="text-danger small mb-3"
                     />
 
+                    {/* Show Password */}
                     <div className="form-check mb-3">
                       <input
                         type="checkbox"
                         className="form-check-input"
-                        checked={
-                          showPassword
-                        }
+                        checked={showPassword}
                         onChange={() =>
                           setShowPassword(
                             !showPassword
@@ -332,11 +332,30 @@ function Register() {
                       </label>
                     </div>
 
+                    {/* Error */}
+                    {registerError && (
+                      <p className="text-danger small">
+                        <FaTimesCircle className="me-1" />
+                        {registerError}
+                      </p>
+                    )}
+
+                    {/* Success */}
+                    {successMessage && (
+                      <p className="text-success small">
+                        <FaCheckCircle className="me-1" />
+                        {successMessage}
+                      </p>
+                    )}
+
                     <button
                       type="submit"
                       className="btn btn-primary w-100"
+                      disabled={loading}
                     >
-                      Register
+                      {loading
+                        ? "Registering..."
+                        : "Register"}
                     </button>
 
                   </Form>
@@ -362,4 +381,4 @@ function Register() {
   );
 }
 
-export default Register
+export default Register;
