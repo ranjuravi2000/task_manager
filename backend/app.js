@@ -1,62 +1,73 @@
+// Load environment variables FIRST
+require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
-const dotenv = require("dotenv");
 
 const connectDB = require("./config/db");
 
-// -------------Routes-------------------//
+// ------------- Routes -------------------//
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const taskRoutes = require("./routes/taskRoutes");
 const commentRoutes = require("./routes/commentRoutes");
 const taskStatisticsRoutes = require("./routes/taskStatisticsRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
+const taskPilotRoutes = require("./routes/taskPilotRoutes");
 
-dotenv.config();
+// Check Gemini API key
+console.log(
+  "Gemini API key loaded:",
+  !!process.env.GEMINI_API_KEY
+);
 
+console.log(
+  "Gemini API key length:",
+  process.env.GEMINI_API_KEY
+    ? process.env.GEMINI_API_KEY.length
+    : 0
+);
 
+// Connect MongoDB
 connectDB();
-
-
 
 const app = express();
 
-
-
+// Middleware
 app.use(cors());
-
 app.use(express.json());
 
+// --------------- API ROUTES ---------------//
 
-// ---------------API ROUTES---------------//
-
-
-// ****Authentication routes***//
+// Authentication
 app.use("/api/auth", authRoutes);
 
-// ***User routes***//
+// Users
 app.use("/api/users", userRoutes);
 
+// Task statistics
 app.use("/api/tasks", taskStatisticsRoutes);
 
-// -------Task routes-----//
+// Tasks
 app.use("/api/tasks", taskRoutes);
 
-// ------Comment routes------------//
+// Comments
 app.use("/api/tasks", commentRoutes);
 
-//Notificn rote //
+// Notifications
 app.use("/api/notifications", notificationRoutes);
 
+// TaskPilot AI
+app.use("/api/taskpilot", taskPilotRoutes);
 
-
+// Root route
 app.get("/", (req, res) => {
   res.json({
     message: "Taskify Backend API is running",
   });
 });
 
+// Server
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {

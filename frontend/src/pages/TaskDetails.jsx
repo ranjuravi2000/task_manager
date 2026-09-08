@@ -627,14 +627,23 @@ function TaskDetails() {
 
           <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
 
-            <button
-              className="btn btn-outline-secondary"
-              onClick={() =>
-                navigate("/dashboard")
-              }
-            >
-              ← Back to Dashboard
-            </button>
+            <div className="d-flex gap-2 flex-wrap">
+
+              <button
+                className="btn btn-outline-secondary"
+                onClick={() => navigate("/dashboard")}
+              >
+                ← Back to Dashboard
+              </button>
+
+              <button
+                className="btn btn-outline-primary"
+                onClick={() => navigate("/taskpilot")}
+              >
+                🤖 Back to TaskPilot
+              </button>
+
+            </div>
 
             {isCreator && (
               <button
@@ -647,6 +656,7 @@ function TaskDetails() {
                   : "🗑️ Delete Task"}
               </button>
             )}
+
           </div>
 
 

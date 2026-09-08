@@ -122,31 +122,30 @@ function SentRequests() {
       <div className="flex-grow-1 bg-light py-4">
         <div className="container">
 
-          <div className="d-flex justify-content-between align-items-center mb-4">
 
+          {/* PAGE HEADER */}
+          <div className="mb-4">
+
+            {/* Back to Dashboard */}
+            <button
+              className="btn btn-outline-dark btn-sm mb-3"
+              onClick={() => navigate("/dashboard")}
+            >
+              <FaArrowLeft className="me-1" />
+              Back to Dashboard
+            </button>
+
+            {/* Page Title */}
             <div>
-              <h3 className="fw-bold mb-0">
+              <h3 className="fw-bold mb-1">
                 <FaPaperPlane className="me-2 text-primary" />
                 Sent Requests
               </h3>
 
               <p className="text-muted small mb-0">
-                Collaboration invitations
-                you've sent to others
+                Collaboration invitations you've sent to others
               </p>
             </div>
-
-            <button
-              className="btn btn-outline-primary btn-sm"
-              onClick={() =>
-                navigate(
-                  "/dashboard"
-                )
-              }
-            >
-              <FaArrowLeft className="me-1" />
-              Back to Dashboard
-            </button>
 
           </div>
 

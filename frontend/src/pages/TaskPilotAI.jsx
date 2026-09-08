@@ -1,114 +1,75 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import API from "../api/axiosInstance";
 
 function TaskPilotAI() {
   const navigate = useNavigate();
-  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
   const [task, setTask] = useState(null);
   const [analysis, setAnalysis] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  useEffect(() => {
-    const allTasks = JSON.parse(localStorage.getItem("tasks")) || [];
+  // --------------------------------------------------
+  // FETCH TASKPILOT ANALYSIS
+  // --------------------------------------------------
 
-    const myTasks = allTasks.filter(
-      (t) =>
-        t.status !== "Completed" &&
-        (t.createdBy === currentUser.username ||
-          t.assignedTo === currentUser.username ||
-          (t.participants || []).includes(currentUser.username))
-    );
+  const fetchTaskPilotAnalysis = async () => {
+    try {
+      setLoading(true);
+      setError("");
 
-    if (myTasks.length === 0) {
-      setTask(null);
-      return;
-    }
+      const response = await API.get("/taskpilot");
 
-    const priorityWeight = { High: 3, Medium: 2, Low: 1 };
-
-    const scored = myTasks.map((t) => {
-      const created = new Date(t.createdAt);
-      const now = new Date();
-      const pendingDays = Math.max(
-        0,
-        Math.floor((now - created) / (1000 * 60 * 60 * 24))
+      console.log(
+        "TaskPilot AI response:",
+        response.data
       );
 
-      const due = t.dueDate ? new Date(t.dueDate) : null;
-      const overdueDays = due
-        ? Math.max(0, Math.floor((now - due) / (1000 * 60 * 60 * 24)))
-        : 0;
-      const isOverdue = due ? now > due : false;
+      setTask(response.data.task || null);
+      setAnalysis(response.data.analysis || null);
 
-      const score =
-        (priorityWeight[t.priority] || 1) * 10 +
-        pendingDays +
-        overdueDays * 2;
+    } catch (error) {
+      console.error(
+        "TaskPilot AI error:",
+        error
+      );
 
-      return { ...t, pendingDays, overdueDays, isOverdue, score };
-    });
+      // If token is invalid/expired
+      if (error.response?.status === 401) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("currentUser");
 
-    scored.sort((a, b) => b.score - a.score);
-    const topTask = scored[0];
+        navigate("/login");
+        return;
+      }
 
-    setTask(topTask);
-    setAnalysis(buildAnalysis(topTask));
+      setError(
+        error.response?.data?.message ||
+        "Failed to load TaskPilot AI analysis."
+      );
+
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+  // --------------------------------------------------
+  // LOAD TASKPILOT
+  // --------------------------------------------------
+
+  useEffect(() => {
+    fetchTaskPilotAnalysis();
   }, []);
 
-  // ------------Rule-based AI analysis-----------//
-  const buildAnalysis = (t) => {
-    let risk = "Low Risk";
-    if (t.isOverdue || (t.priority === "High" && t.pendingDays > 3)) {
-      risk = "High Risk";
-    } else if (t.pendingDays > 1) {
-      risk = "Medium Risk";
-    }
 
-    const suggestions = [];
-
-    if ((t.description || "").length > 60) {
-      suggestions.push("Break task into smaller subtasks");
-    } else {
-      suggestions.push("Clarify task scope before starting");
-    }
-
-    if (!t.participants || t.participants.length <= 1) {
-      suggestions.push("Invite a collaborator to speed things up");
-    } else {
-      suggestions.push("Sync with collaborators on current progress");
-    }
-
-    if (t.priority === "High") {
-      suggestions.push("Allocate 1 focused hour today");
-    } else {
-      suggestions.push("Schedule a short work session this week");
-    }
-
-    if (t.isOverdue) {
-      suggestions.push("Set a personal deadline buffer");
-    } else {
-      suggestions.push("Confirm due date is still realistic");
-    }
-
-    const category = t.category || "General";
-    const recoveryPlan = [
-      { day: "Day 1", label: `Plan ${category}` },
-      { day: "Day 2", label: "Core Execution" },
-      { day: "Day 3", label: "Review & Finish" },
-    ];
-
-    const estCompletion =
-      risk === "High Risk" ? "3 Days" : risk === "Medium Risk" ? "2 Days" : "1 Day";
-
-    const reasonParts = [];
-    if (t.priority === "High") reasonParts.push("High Priority");
-    if (t.isOverdue) reasonParts.push("Delayed");
-    if (t.pendingDays > 3 && !t.isOverdue) reasonParts.push("Stalled");
-    const reason = reasonParts.length > 0 ? reasonParts.join(" + ") : "Needs Attention";
-
-    return { risk, suggestions, recoveryPlan, estCompletion, reason };
-  };
+  // --------------------------------------------------
+  // RISK BADGE
+  // --------------------------------------------------
 
   const getRiskBadgeClass = (risk) => {
     const map = {
@@ -116,151 +77,661 @@ function TaskPilotAI() {
       "Medium Risk": "badge bg-warning text-dark",
       "Low Risk": "badge bg-success",
     };
+
     return map[risk] || "badge bg-secondary";
   };
 
+
+  // --------------------------------------------------
+  // STATUS BADGE
+  // --------------------------------------------------
+
+  const getStatusBadgeClass = (status) => {
+    const map = {
+      pending: "badge bg-secondary",
+      "in-progress": "badge bg-primary",
+      completed: "badge bg-success",
+    };
+
+    return map[status] || "badge bg-secondary";
+  };
+
+
+  // --------------------------------------------------
+  // DEADLINE STATUS
+  // --------------------------------------------------
+
+  const getDeadlineStatus = () => {
+    if (!task) return null;
+
+    // OVERDUE
+    if (task.isOverdue) {
+      return {
+        text: `OVERDUE BY ${task.overdueDays} DAY${task.overdueDays === 1
+            ? ""
+            : "S"
+          }`,
+        className: "text-danger",
+      };
+    }
+
+    // DUE TODAY
+    if (task.isDueToday) {
+      return {
+        text: "DUE TODAY",
+        className: "text-warning",
+      };
+    }
+
+    // DUE TOMORROW
+    if (task.daysUntilDue === 1) {
+      return {
+        text: "DUE TOMORROW",
+        className: "text-warning",
+      };
+    }
+
+    // UPCOMING
+    if (
+      task.daysUntilDue !== null &&
+      task.daysUntilDue > 1
+    ) {
+      return {
+        text: `DUE IN ${task.daysUntilDue} DAYS`,
+        className: "text-primary",
+      };
+    }
+
+    // NO DEADLINE
+    return {
+      text: "NO DEADLINE",
+      className: "text-muted",
+    };
+  };
+
+
   return (
     <div className="d-flex flex-column min-vh-100">
+
+      {/* --------------------------------------------------
+          HEADER
+      -------------------------------------------------- */}
+
       <Header showNav={true} />
 
+
+      {/* --------------------------------------------------
+          MAIN CONTENT
+      -------------------------------------------------- */}
+
       <div className="flex-grow-1 bg-light py-4">
+
         <div className="container">
 
-          {/* ---------Page Title ---------*/}
-          <div className="d-flex justify-content-between align-items-center mb-4">
-            <div>
-              <h3 className="fw-bold mb-0">🤖 TaskPilot AI</h3>
-              <p className="text-muted small mb-0">
-                Intelligent Task Coach — Pending for {task ? task.pendingDays : 0} days
-              </p>
-            </div>
+          {/* --------------------------------------------------
+              PAGE HEADER
+          -------------------------------------------------- */}
+
+          <div className="mb-4">
+
             <button
-              className="btn btn-outline-primary btn-sm"
-              onClick={() => navigate("/dashboard")}
+              type="button"
+              className="btn btn-outline-dark btn-sm mb-3"
+              onClick={() =>
+                navigate("/dashboard")
+              }
             >
               ← Back to Dashboard
             </button>
+
+
+            <div className="d-flex justify-content-between align-items-start">
+
+              <div>
+
+                <h3 className="fw-bold mb-1">
+                  🤖 TaskPilot AI
+                </h3>
+
+                <p className="text-muted small mb-0">
+
+                  Intelligent Task Coach
+
+                  {task &&
+                    ` — Pending for ${task.pendingDays
+                    } day${task.pendingDays === 1
+                      ? ""
+                      : "s"
+                    }`}
+
+                </p>
+
+              </div>
+
+
+              {/* REFRESH BUTTON */}
+
+              {!loading && task && (
+                <div className="d-flex gap-2 flex-wrap">
+
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary btn-sm"
+                    onClick={() =>
+                      navigate("/taskpilot/history")
+                    }
+                  >
+                    🕘 History
+                  </button>
+
+                  <button
+                    type="button"
+                    className="btn btn-outline-primary btn-sm"
+                    onClick={fetchTaskPilotAnalysis}
+                  >
+                    🔄 Refresh Analysis
+                  </button>
+
+                </div>
+              )}
+
+            </div>
+
           </div>
 
-          {!task ? (
+
+          {/* --------------------------------------------------
+              LOADING
+          -------------------------------------------------- */}
+
+          {loading && (
+
             <div className="card shadow-sm">
-              <div className="card-body text-center py-5 text-muted">
-                <h5>✅ Nothing to coach right now</h5>
-                <p className="mb-0">
-                  All your tasks are completed or there's nothing pending. Great work!
+
+              <div className="card-body text-center py-5">
+
+                <div className="spinner-border text-primary mb-3"></div>
+
+                <h5 className="fw-semibold">
+                  TaskPilot is analyzing your tasks...
+                </h5>
+
+                <p className="text-muted mb-0">
+                  Finding the task that needs
+                  your attention most.
                 </p>
-              </div>
-            </div>
-          ) : (
-            <div className="row g-4">
 
-              {/*------------ Task Snapshot + Suggestions----------*/}
-              <div className="col-md-7">
-                <div className="card shadow-sm mb-4">
-                  <div className="card-header bg-white fw-semibold d-flex justify-content-between align-items-center">
-                    <span>📋 Task Snapshot</span>
-                    <span className={getRiskBadgeClass(analysis.risk)}>
-                      {analysis.risk}
-                    </span>
-                  </div>
-                  <div className="card-body">
-                    <h5 className="fw-bold mb-1">{task.title}</h5>
-                    <p className="text-muted small mb-2">
-                      Pending for {task.pendingDays} day{task.pendingDays === 1 ? "" : "s"}
-                      {task.isOverdue && (
-                        <span className="text-danger fw-semibold">
-                          {" "}• Overdue by {task.overdueDays} day{task.overdueDays === 1 ? "" : "s"}
-                        </span>
-                      )}
-                    </p>
-
-                    <div style={{ fontSize: "13px" }}>
-                      <div className="mb-1">
-                        <strong>🎯 Priority:</strong> {task.priority}
-                      </div>
-                      <div className="mb-1">
-                        <strong>📁 Category:</strong> {task.category || "N/A"}
-                      </div>
-                      <div>
-                        <strong>📅 Due Date:</strong> {task.dueDate || "Not set"}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="card shadow-sm">
-                  <div className="card-header bg-white fw-semibold">
-                    💡 AI Suggestions
-                  </div>
-                  <div className="card-body">
-                    <ul className="list-unstyled mb-0">
-                      {analysis.suggestions.map((s, i) => (
-                        <li key={i} className="mb-2">
-                          <span className="text-success me-2">✓</span>
-                          {s}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </div>
-
-              {/* ----- Recovery Plan and Recommended Next------- */}
-              <div className="col-md-5">
-                <div className="card shadow-sm mb-4">
-                  <div className="card-header bg-white fw-semibold">
-                    🗺️ Recovery Plan
-                  </div>
-                  <div className="card-body">
-                    <div className="row g-2 text-center mb-3">
-                      {analysis.recoveryPlan.map((step, i) => (
-                        <div className="col-4" key={i}>
-                          <div className="border rounded py-2 px-1 h-100">
-                            <div className="fw-bold small">{step.day}</div>
-                            <div className="text-muted" style={{ fontSize: "11px" }}>
-                              {step.label}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="d-flex justify-content-between align-items-center">
-                      <span className="text-muted small fw-semibold">
-                        EST. COMPLETION
-                      </span>
-                      <span className="fw-bold">{analysis.estCompletion}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="card shadow-sm border-primary">
-                  <div className="card-header bg-white fw-semibold">
-                    🚀 Recommended Next
-                  </div>
-                  <div className="card-body">
-                    <h6 className="fw-bold mb-1">{task.title}</h6>
-                    <p className="text-muted small mb-3">
-                      Reason: {analysis.reason}
-                    </p>
-                    <button
-                      className="btn btn-primary w-100"
-                      onClick={() => navigate(`/task/${task.id}`)}
-                    >
-                      Start Now →
-                    </button>
-                  </div>
-                </div>
               </div>
 
             </div>
+
           )}
 
+
+          {/* --------------------------------------------------
+              ERROR
+          -------------------------------------------------- */}
+
+          {!loading && error && (
+
+            <div className="card shadow-sm">
+
+              <div className="card-body text-center py-5">
+
+                <div className="text-danger fs-1 mb-2">
+                  ⚠️
+                </div>
+
+                <h5 className="fw-bold">
+                  Unable to load TaskPilot
+                </h5>
+
+                <p className="text-muted">
+                  {error}
+                </p>
+
+                <button
+                  className="btn btn-primary"
+                  onClick={
+                    fetchTaskPilotAnalysis
+                  }
+                >
+                  Try Again
+                </button>
+
+              </div>
+
+            </div>
+
+          )}
+
+
+          {/* --------------------------------------------------
+              NO TASKS
+          -------------------------------------------------- */}
+
+          {!loading &&
+            !error &&
+            !task && (
+
+              <div className="card shadow-sm">
+
+                <div className="card-body text-center py-5 text-muted">
+
+                  <div className="fs-1 mb-2">
+                    ✅
+                  </div>
+
+                  <h5>
+                    Nothing to coach right now
+                  </h5>
+
+                  <p className="mb-0">
+                    All your tasks are completed
+                    or there's nothing pending.
+                    Great work!
+                  </p>
+
+                </div>
+
+              </div>
+
+            )}
+
+
+          {/* --------------------------------------------------
+              TASKPILOT RESULT
+          -------------------------------------------------- */}
+
+          {!loading &&
+            !error &&
+            task &&
+            analysis && (
+
+              <div className="row g-4">
+
+
+                {/* ==================================================
+                    LEFT COLUMN
+                ================================================== */}
+
+                <div className="col-md-7">
+
+
+                  {/* --------------------------------------------------
+                      TASK SNAPSHOT
+                  -------------------------------------------------- */}
+
+                  <div className="card shadow-sm mb-4">
+
+                    <div className="card-header bg-white fw-semibold d-flex justify-content-between align-items-center">
+
+                      <span>
+                        📋 Task Snapshot
+                      </span>
+
+                      <span
+                        className={getRiskBadgeClass(
+                          analysis.risk
+                        )}
+                      >
+                        {analysis.risk}
+                      </span>
+
+                    </div>
+
+
+                    <div className="card-body">
+
+                      {/* TASK TITLE */}
+
+                      <h5 className="fw-bold mb-1">
+                        {task.title}
+                      </h5>
+
+
+                      {/* TASK STATUS */}
+
+                      <div className="mb-2">
+
+                        <span
+                          className={getStatusBadgeClass(
+                            task.status
+                          )}
+                        >
+                          {task.status ===
+                            "in-progress"
+                            ? "In Progress"
+                            : task.status
+                              ?.charAt(0)
+                              .toUpperCase() +
+                            task.status?.slice(
+                              1
+                            )}
+                        </span>
+
+                      </div>
+
+
+                      {/* PENDING / OVERDUE */}
+
+                      <p className="text-muted small mb-3">
+
+                        Pending for{" "}
+                        {task.pendingDays} day
+                        {task.pendingDays === 1
+                          ? ""
+                          : "s"}
+
+
+                        {task.isOverdue && (
+
+                          <span className="text-danger fw-semibold">
+
+                            {" "}
+                            • Overdue by{" "}
+                            {task.overdueDays} day
+                            {task.overdueDays ===
+                              1
+                              ? ""
+                              : "s"}
+
+                          </span>
+
+                        )}
+
+                      </p>
+
+
+                      {/* TASK INFORMATION */}
+
+                      <div
+                        style={{
+                          fontSize: "13px",
+                        }}
+                      >
+
+                        {/* PRIORITY */}
+
+                        <div className="mb-1">
+
+                          <strong>
+                            🎯 Priority:
+                          </strong>{" "}
+
+                          {task.priority}
+
+                        </div>
+
+
+                        {/* CATEGORY */}
+
+                        <div className="mb-1">
+
+                          <strong>
+                            📁 Category:
+                          </strong>{" "}
+
+                          {task.category ||
+                            "N/A"}
+
+                        </div>
+
+
+                        {/* DUE DATE */}
+
+                        <div className="mb-1">
+
+                          <strong>
+                            📅 Due Date:
+                          </strong>{" "}
+
+                          {task.dueDate
+                            ? new Date(
+                              task.dueDate
+                            ).toLocaleDateString()
+                            : "Not set"}
+
+                        </div>
+
+
+                        {/* DEADLINE STATUS */}
+
+                        {getDeadlineStatus() && (
+
+                          <div className="mt-2 mb-2">
+
+                            <span
+                              className={`fw-bold small ${getDeadlineStatus()
+                                  .className
+                                }`}
+                            >
+                              {getDeadlineStatus()
+                                .text}
+                            </span>
+
+                          </div>
+
+                        )}
+
+
+                        {/* PROGRESS */}
+
+                        <div>
+
+                          <strong>
+                            📊 Progress:
+                          </strong>{" "}
+
+                          {task.progress || 0}%
+
+                        </div>
+
+                      </div>
+
+
+                      {/* PROGRESS BAR */}
+
+                      <div className="progress mt-3">
+
+                        <div
+                          className="progress-bar"
+                          role="progressbar"
+                          style={{
+                            width: `${task.progress ||
+                              0
+                              }%`,
+                          }}
+                        >
+                          {task.progress || 0}%
+                        </div>
+
+                      </div>
+
+                    </div>
+
+                  </div>
+
+
+                  {/* --------------------------------------------------
+                      AI SUGGESTIONS
+                  -------------------------------------------------- */}
+
+                  <div className="card shadow-sm">
+
+                    <div className="card-header bg-white fw-semibold">
+                      💡 AI Suggestions
+                    </div>
+
+                    <div className="card-body">
+
+                      <ul className="list-unstyled mb-0">
+
+                        {analysis.suggestions?.map(
+                          (
+                            suggestion,
+                            index
+                          ) => (
+
+                            <li
+                              key={index}
+                              className="mb-2"
+                            >
+
+                              <span className="text-success me-2">
+                                ✓
+                              </span>
+
+                              {suggestion}
+
+                            </li>
+
+                          )
+                        )}
+
+                      </ul>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+
+                {/* ==================================================
+                    RIGHT COLUMN
+                ================================================== */}
+
+                <div className="col-md-5">
+
+
+                  {/* --------------------------------------------------
+                      RECOVERY PLAN
+                  -------------------------------------------------- */}
+
+                  <div className="card shadow-sm mb-4">
+
+                    <div className="card-header bg-white fw-semibold">
+                      🗺️ Recovery Plan
+                    </div>
+
+                    <div className="card-body">
+
+                      <div className="row g-2 text-center mb-3">
+
+                        {analysis.recoveryPlan?.map(
+                          (
+                            step,
+                            index
+                          ) => (
+
+                            <div
+                              className="col-4"
+                              key={index}
+                            >
+
+                              <div className="border rounded py-2 px-1 h-100">
+
+                                <div className="fw-bold small">
+                                  {step.day}
+                                </div>
+
+                                <div
+                                  className="text-muted"
+                                  style={{
+                                    fontSize:
+                                      "11px",
+                                  }}
+                                >
+                                  {step.label}
+                                </div>
+
+                              </div>
+
+                            </div>
+
+                          )
+                        )}
+
+                      </div>
+
+
+                      {/* ESTIMATED COMPLETION */}
+
+                      <div className="d-flex justify-content-between align-items-center">
+
+                        <span className="text-muted small fw-semibold">
+                          EST. COMPLETION
+                        </span>
+
+                        <span className="fw-bold">
+                          {
+                            analysis.estCompletion
+                          }
+                        </span>
+
+                      </div>
+
+                    </div>
+
+                  </div>
+
+
+                  {/* --------------------------------------------------
+                      RECOMMENDED NEXT
+                  -------------------------------------------------- */}
+
+                  <div className="card shadow-sm border-primary">
+
+                    <div className="card-header bg-white fw-semibold">
+                      🚀 Recommended Next
+                    </div>
+
+                    <div className="card-body">
+
+                      <h6 className="fw-bold mb-1">
+                        {task.title}
+                      </h6>
+
+                      <p className="text-muted small mb-3">
+                        Reason:{" "}
+                        {analysis.reason}
+                      </p>
+
+                      <button
+                        className="btn btn-primary w-100"
+                        onClick={() =>
+                          navigate(
+                            `/task/${task._id}`
+                          )
+                        }
+                      >
+                        Start Now →
+                      </button>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            )}
+
         </div>
+
       </div>
 
+
+      {/* --------------------------------------------------
+          FOOTER
+      -------------------------------------------------- */}
+
       <Footer />
+
     </div>
   );
 }
 
-export default TaskPilotAI
+export default TaskPilotAI;

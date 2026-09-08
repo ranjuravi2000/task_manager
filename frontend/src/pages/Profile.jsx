@@ -176,22 +176,31 @@ function Profile() {
         <div className="container">
 
           {/* ── Page Title ── */}
-          <div className="d-flex justify-content-between align-items-center mb-4">
+          {/* PAGE HEADER */}
+          <div className="mb-4">
+
+            {/* Back to Dashboard */}
+            <button
+              type="button"
+              className="btn btn-outline-dark btn-sm mb-3"
+              onClick={() => navigate("/dashboard")}
+            >
+              <FaArrowLeft className="me-1" />
+              Back to Dashboard
+            </button>
+
+            {/* Page Title */}
             <div>
-              <h3 className="fw-bold mb-0">
+              <h3 className="fw-bold mb-1">
                 <FaUser className="me-2 text-primary" />
                 My Profile
               </h3>
+
               <p className="text-muted small mb-0">
                 Manage your account details and preferences
               </p>
             </div>
-            <button
-              className="btn btn-outline-secondary btn-sm"
-              onClick={() => navigate("/dashboard")}
-            >
-              ← Back to Dashboard
-            </button>
+
           </div>
 
           <div className="row g-4">
@@ -408,13 +417,12 @@ function Profile() {
                     <div className="input-group">
                       <input
                         type={showNewPassword ? "text" : "password"}
-                        className={`form-control ${
-                          newPassword
+                        className={`form-control ${newPassword
                             ? allPasswordRulesPassed
                               ? "is-valid"
                               : "is-invalid"
                             : ""
-                        }`}
+                          }`}
                         placeholder="Enter new password"
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
@@ -434,9 +442,8 @@ function Profile() {
                       {passwordRules.map((rule, i) => (
                         <li
                           key={i}
-                          className={`small ${
-                            rule.test(newPassword) ? "text-success" : "text-danger"
-                          }`}
+                          className={`small ${rule.test(newPassword) ? "text-success" : "text-danger"
+                            }`}
                         >
                           {rule.test(newPassword) ? (
                             <FaCheckCircle className="me-1" />
@@ -456,13 +463,12 @@ function Profile() {
                     </label>
                     <input
                       type={showNewPassword ? "text" : "password"}
-                      className={`form-control ${
-                        confirmNewPassword
+                      className={`form-control ${confirmNewPassword
                           ? confirmNewPassword === newPassword
                             ? "is-valid"
                             : "is-invalid"
                           : ""
-                      }`}
+                        }`}
                       placeholder="Re-enter new password"
                       value={confirmNewPassword}
                       onChange={(e) => setConfirmNewPassword(e.target.value)}

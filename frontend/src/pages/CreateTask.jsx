@@ -229,7 +229,7 @@ function CreateTask() {
     );
   };
 
-  
+
   //--------- GET PARTICIPANT DETAILS----------//
   const getParticipantDetails = (userId) => {
     return users.find(
@@ -242,7 +242,7 @@ function CreateTask() {
   const saveTask = async () => {
     setMessage("");
 
-    
+
     // PLAN LIMIT
     if (atLimit) {
       setMessage(
@@ -253,7 +253,7 @@ function CreateTask() {
       return;
     }
 
-  
+
 
     if (!title.trim()) {
       setMessage(
@@ -262,7 +262,7 @@ function CreateTask() {
       return;
     }
 
-   
+
 
     if (!description.trim()) {
       setMessage(
@@ -282,9 +282,9 @@ function CreateTask() {
     try {
       setIsSaving(true);
 
-     
+
       // TASK DATA
-     
+
 
       const taskData = {
         title: title.trim(),
@@ -317,9 +317,9 @@ function CreateTask() {
         taskData
       );
 
-    
+
       // CREATE TASK
-     
+
 
       const response = await API.post(
         "/tasks",
@@ -335,9 +335,9 @@ function CreateTask() {
         "Task created successfully!"
       );
 
-      
+
       // GO TO DASHBOARD
-     
+
 
       setTimeout(() => {
         navigate("/dashboard");
@@ -372,33 +372,36 @@ function CreateTask() {
 
   return (
     <>
-      <Header />
+      <Header showNav={true} />
 
       <div className="container py-4">
 
         {/* BACK BUTTON */}
-        <button
-          type="button"
-          className="btn btn-outline-secondary mb-4"
-          onClick={() =>
-            navigate("/dashboard")
-          }
-        >
-          <FaArrowLeft className="me-2" />
-          Back to Dashboard
-        </button>
-
         {/* PAGE HEADER */}
         <div className="mb-4">
-          <h2 className="fw-bold">
-            <FaTasks className="me-2" />
-            Create New Task
-          </h2>
 
-          <p className="text-muted">
-            Create a task and manage your
-            work efficiently.
-          </p>
+          {/* Back to Dashboard */}
+          <button
+            type="button"
+            className="btn btn-outline-dark btn-sm mb-3"
+            onClick={() => navigate("/dashboard")}
+          >
+            <FaArrowLeft className="me-1" />
+            Back to Dashboard
+          </button>
+
+          {/* Page Title */}
+          <div>
+            <h2 className="fw-bold mb-1">
+              <FaTasks className="me-2" />
+              Create New Task
+            </h2>
+
+            <p className="text-muted mb-0">
+              Create a task and manage your work efficiently.
+            </p>
+          </div>
+
         </div>
 
         {/* PLAN LIMIT */}

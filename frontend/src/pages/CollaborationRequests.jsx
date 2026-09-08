@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { FaHandshake,FaArrowLeft,FaBell,FaInbox,FaClipboardList,FaUser,
-  FaBullseye,FaCalendarAlt,FaFolder,FaCommentDots,FaCheck,FaTimes,FaEnvelope,FaFolderOpen,
+import {
+  FaHandshake, FaArrowLeft, FaBell, FaInbox, FaClipboardList, FaUser,
+  FaBullseye, FaCalendarAlt, FaFolder, FaCommentDots, FaCheck, FaTimes, FaEnvelope, FaFolderOpen,
 } from "react-icons/fa";
 
 function CollaborationRequests() {
@@ -91,23 +92,30 @@ function CollaborationRequests() {
 
       <div className="flex-grow-1 bg-light py-4">
         <div className="container">
-          <div className="d-flex justify-content-between align-items-center mb-4">
-            <div>
-              <h3 className="fw-bold mb-0">
-                <FaHandshake className="me-2 text-primary" />
-                Collaboration Requests
-              </h3>
-              <p className="text-muted small mb-0">
-                Task invitations sent to you by other users
-              </p>
-            </div>
+          {/* PAGE HEADER */}
+          <div className="mb-4">
+
+            {/* Back to Dashboard */}
             <button
-              className="btn btn-outline-primary btn-sm"
+              className="btn btn-outline-dark btn-sm mb-3"
               onClick={() => navigate("/dashboard")}
             >
               <FaArrowLeft className="me-1" />
               Back to Dashboard
             </button>
+
+            {/* Page Title */}
+            <div>
+              <h3 className="fw-bold mb-1">
+                <FaHandshake className="me-2 text-primary" />
+                Collaboration Requests
+              </h3>
+
+              <p className="text-muted small mb-0">
+                Task invitations sent to you by other users
+              </p>
+            </div>
+
           </div>
 
           {/*----------------- Status---- */}
