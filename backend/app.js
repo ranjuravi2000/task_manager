@@ -14,6 +14,7 @@ const commentRoutes = require("./routes/commentRoutes");
 const taskStatisticsRoutes = require("./routes/taskStatisticsRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
 const taskPilotRoutes = require("./routes/taskPilotRoutes");
+const subscriptionRoutes = require("./routes/subscriptionRoutes");
 
 // Check Gemini API key
 console.log(
@@ -59,6 +60,8 @@ app.use("/api/notifications", notificationRoutes);
 
 // TaskPilot AI
 app.use("/api/taskpilot", taskPilotRoutes);
+
+app.use("/api/subscription", subscriptionRoutes);
 
 // Root route
 app.get("/", (req, res) => {

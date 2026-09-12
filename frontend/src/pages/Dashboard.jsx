@@ -1,6 +1,6 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import {
   PieChart,
   Pie,
@@ -18,19 +18,21 @@ import API from "../api/axiosInstance";
 function Dashboard() {
   const navigate = useNavigate();
 
-
+  // =========================================================
   // STATE
+  // =========================================================
+
   const [tasks, setTasks] = useState([]);
-  const [search, setSearch] = useState("");
-  const [priorityFilter, setPriorityFilter] = useState("All");
-  const [statusFilter, setStatusFilter] = useState("All");
-  const [ownershipFilter, setOwnershipFilter] = useState("All");
 
   const [loading, setLoading] = useState(true);
-  const [actionLoading, setActionLoading] = useState(null);
 
+  const [actionLoading, setActionLoading] =
+    useState(null);
 
+  // =========================================================
   // TASK STATISTICS
+  // =========================================================
+
   const [stats, setStats] = useState({
     total: 0,
     pending: 0,
@@ -44,21 +46,36 @@ function Dashboard() {
     averageProgress: 0,
   });
 
-
-  // CURRENT USER / Plan
+  // =========================================================
+  // CURRENT USER
+  // =========================================================
 
   const currentUser =
-    JSON.parse(localStorage.getItem("currentUser")) || {};
+    JSON.parse(
+      localStorage.getItem("currentUser")
+    ) || {};
 
-  const userPlan = currentUser?.plan || "free";
+  // =========================================================
+  // USER PLAN
+  // =========================================================
+
+  const userPlan =
+    currentUser?.plan || "free";
+
   const planInfo = getPlan(userPlan);
 
+  // =========================================================
+  // CURRENT USER ID
+  // =========================================================
+
   const currentUserId =
-    currentUser?._id || currentUser?.id || null;
+    currentUser?._id ||
+    currentUser?.id ||
+    null;
 
-
+  // =========================================================
   // HELPERS
-
+  // =========================================================
 
   const getUserId = (user) => {
     if (!user) return null;
@@ -69,6 +86,10 @@ function Dashboard() {
 
     return user;
   };
+
+  // =========================================================
+  // FORMAT STATUS
+  // =========================================================
 
   const formatStatus = (status) => {
     if (!status) return "";
@@ -83,6 +104,10 @@ function Dashboard() {
       .join(" ");
   };
 
+  // =========================================================
+  // FORMAT PRIORITY
+  // =========================================================
+
   const formatPriority = (priority) => {
     if (!priority) return "";
 
@@ -91,6 +116,10 @@ function Dashboard() {
       priority.slice(1)
     );
   };
+
+  // =========================================================
+  // PRIORITY CLASS
+  // =========================================================
 
   const getPriorityClass = (priority) => {
     switch (priority) {
@@ -108,6 +137,10 @@ function Dashboard() {
     }
   };
 
+  // =========================================================
+  // STATUS CLASS
+  // =========================================================
+
   const getStatusClass = (status) => {
     switch (status) {
       case "completed":
@@ -124,8 +157,10 @@ function Dashboard() {
     }
   };
 
-
+  // =========================================================
   // FETCH TASKS
+  // =========================================================
+
   const fetchTasks = async () => {
     try {
       setLoading(true);
@@ -134,21 +169,38 @@ function Dashboard() {
 
       console.log(
         "Tasks from backend:",
-        JSON.stringify(response.data, null, 2)
+        JSON.stringify(
+          response.data,
+          null,
+          2
+        )
       );
 
-      setTasks(response.data.tasks || []);
+      setTasks(
+        response.data.tasks || []
+      );
     } catch (error) {
-      console.error("Error fetching tasks:", error);
+      console.error(
+        "Error fetching tasks:",
+        error
+      );
 
-      if (error.response?.status === 401) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("currentUser");
+      if (
+        error.response?.status === 401
+      ) {
+        localStorage.removeItem(
+          "token"
+        );
+
+        localStorage.removeItem(
+          "currentUser"
+        );
+
         navigate("/login");
       } else {
         alert(
           error.response?.data?.message ||
-          "Failed to fetch tasks."
+            "Failed to fetch tasks."
         );
       }
     } finally {
@@ -156,8 +208,10 @@ function Dashboard() {
     }
   };
 
+  // =========================================================
+  // FETCH STATISTICS
+  // =========================================================
 
-  // FETCH STATISTICS   //
   const fetchStats = async () => {
     try {
       const response = await API.get(
@@ -165,10 +219,9 @@ function Dashboard() {
       );
 
       console.log(
-        "Task statistics from backend:",
+        "Task statistics:",
         response.data
       );
-
 
       setStats(
         response.data.statistics || {
@@ -190,28 +243,48 @@ function Dashboard() {
         error
       );
 
-      if (error.response?.status === 401) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("currentUser");
+      if (
+        error.response?.status === 401
+      ) {
+        localStorage.removeItem(
+          "token"
+        );
+
+        localStorage.removeItem(
+          "currentUser"
+        );
+
         navigate("/login");
       }
     }
   };
 
+  // =========================================================
+  // LOAD DASHBOARD DATA
+  // =========================================================
 
   useEffect(() => {
     fetchTasks();
     fetchStats();
   }, []);
 
+  // =========================================================
+  // STATISTICS VALUES
+  // =========================================================
 
   const totalTasks = stats.total;
-  const completedTasks = stats.completed;
-  const pendingTasks = stats.pending;
-  const inProgressTasks = stats.inProgress;
 
+  const completedTasks =
+    stats.completed;
 
-  const overdueTasks = stats.overdue;
+  const pendingTasks =
+    stats.pending;
+
+  const inProgressTasks =
+    stats.inProgress;
+
+  const overdueTasks =
+    stats.overdue;
 
   const completionPercentage =
     stats.completionPercentage;
@@ -219,36 +292,68 @@ function Dashboard() {
   const averageProgress =
     stats.averageProgress;
 
-  const myOwnTasks = tasks.filter((task) => {
-    const createdById = getUserId(task.createdBy);
+  // =========================================================
+  // MY OWN TASKS
+  // =========================================================
 
-    return createdById === currentUserId;
-  }).length;
+  const myOwnTasks = tasks.filter(
+    (task) => {
+      const createdById =
+        getUserId(
+          task.createdBy
+        );
 
-  const sharedTasks = tasks.filter((task) => {
-    const createdById = getUserId(task.createdBy);
-    const assignedToId = getUserId(task.assignedTo);
+      return (
+        createdById ===
+        currentUserId
+      );
+    }
+  ).length;
 
-    const participantIds = (
-      task.participants || []
-    ).map((participant) =>
-      getUserId(participant)
-    );
+  // =========================================================
+  // SHARED TASKS
+  // =========================================================
 
-    const isAssignedToMe =
-      assignedToId === currentUserId;
+  const sharedTasks = tasks.filter(
+    (task) => {
+      const createdById =
+        getUserId(
+          task.createdBy
+        );
 
-    const isParticipant =
-      participantIds.includes(currentUserId);
+      const assignedToId =
+        getUserId(
+          task.assignedTo
+        );
 
-    return (
-      createdById !== currentUserId &&
-      (isAssignedToMe || isParticipant)
-    );
-  }).length;
+      const participantIds = (
+        task.participants || []
+      ).map((participant) =>
+        getUserId(participant)
+      );
 
+      const isAssignedToMe =
+        assignedToId ===
+        currentUserId;
 
-  //--------- CHART------------//
+      const isParticipant =
+        participantIds.includes(
+          currentUserId
+        );
+
+      return (
+        createdById !==
+          currentUserId &&
+        (isAssignedToMe ||
+          isParticipant)
+      );
+    }
+  ).length;
+
+  // =========================================================
+  // CHART DATA
+  // =========================================================
+
   const chartData = [
     {
       name: "Completed",
@@ -270,72 +375,182 @@ function Dashboard() {
     "#0d6efd",
   ];
 
-  // ---------FILTER TASKS--------------//
-  const filteredTasks = tasks.filter((task) => {
-    const searchText = search.toLowerCase();
+  // =========================================================
+  // RECENT & IMPORTANT TASKS
+  // =========================================================
+  //
+  // Dashboard should NOT show every task.
+  //
+  // Priority:
+  //
+  // 1. Overdue active tasks
+  // 2. High priority active tasks
+  // 3. Recently updated tasks
+  // 4. Recently created tasks
+  //
+  // Maximum 5 tasks.
+  // =========================================================
 
-    const matchesSearch =
-      task.title
-        ?.toLowerCase()
-        .includes(searchText) ||
-      task.description
-        ?.toLowerCase()
-        .includes(searchText);
+  const recentImportantTasks = [
+    ...tasks,
+  ]
+    .sort((a, b) => {
+      const now = new Date();
 
-    const matchesPriority =
-      priorityFilter === "All" ||
-      task.priority ===
-      priorityFilter.toLowerCase();
+      // -----------------------------------------------------
+      // CHECK OVERDUE
+      // -----------------------------------------------------
 
-    const matchesStatus =
-      statusFilter === "All" ||
-      task.status ===
-      statusFilter
-        .toLowerCase()
-        .replace(" ", "-");
+      const isOverdue = (task) => {
+        if (
+          !task.dueDate ||
+          task.status ===
+            "completed"
+        ) {
+          return false;
+        }
 
-    let matchesOwnership = true;
+        return (
+          new Date(
+            task.dueDate
+          ) < now
+        );
+      };
 
-    const createdById =
-      getUserId(task.createdBy);
+      // -----------------------------------------------------
+      // OVERDUE SCORE
+      // -----------------------------------------------------
 
-    const assignedToId =
-      getUserId(task.assignedTo);
+      const getOverdueScore = (
+        task
+      ) => {
+        return isOverdue(task)
+          ? 1000
+          : 0;
+      };
 
-    const participantIds = (
-      task.participants || []
-    ).map((participant) =>
-      getUserId(participant)
-    );
+      // -----------------------------------------------------
+      // PRIORITY SCORE
+      // -----------------------------------------------------
 
-    if (ownershipFilter === "My Tasks") {
-      matchesOwnership =
-        createdById === currentUserId;
-    }
+      const getPriorityScore = (
+        task
+      ) => {
+        if (
+          task.status ===
+          "completed"
+        ) {
+          return 0;
+        }
 
-    if (ownershipFilter === "Shared") {
-      const assignedToMe =
-        assignedToId === currentUserId;
+        if (
+          task.priority ===
+          "high"
+        ) {
+          return 300;
+        }
 
-      const participant =
-        participantIds.includes(currentUserId);
+        if (
+          task.priority ===
+          "medium"
+        ) {
+          return 200;
+        }
 
-      matchesOwnership =
-        createdById !== currentUserId &&
-        (assignedToMe || participant);
+        if (
+          task.priority ===
+          "low"
+        ) {
+          return 100;
+        }
+
+        return 0;
+      };
+
+      // -----------------------------------------------------
+      // STATUS SCORE
+      // -----------------------------------------------------
+
+      const getStatusScore = (
+        task
+      ) => {
+        if (
+          task.status ===
+          "in-progress"
+        ) {
+          return 50;
+        }
+
+        if (
+          task.status ===
+          "pending"
+        ) {
+          return 30;
+        }
+
+        return 0;
+      };
+
+      // -----------------------------------------------------
+      // DATE SCORE
+      // -----------------------------------------------------
+
+      const getDate = (task) => {
+        return new Date(
+          task.updatedAt ||
+            task.createdAt ||
+            0
+        ).getTime();
+      };
+
+      const scoreA =
+        getOverdueScore(a) +
+        getPriorityScore(a) +
+        getStatusScore(a);
+
+      const scoreB =
+        getOverdueScore(b) +
+        getPriorityScore(b) +
+        getStatusScore(b);
+
+      // Higher score first
+      if (scoreA !== scoreB) {
+        return scoreB - scoreA;
+      }
+
+      // Newest first
+      return (
+        getDate(b) -
+        getDate(a)
+      );
+    })
+    .slice(0, 5);
+
+  // =========================================================
+  // CHECK OVERDUE
+  // =========================================================
+
+  const isTaskOverdue = (task) => {
+    if (
+      !task.dueDate ||
+      task.status === "completed"
+    ) {
+      return false;
     }
 
     return (
-      matchesSearch &&
-      matchesPriority &&
-      matchesStatus &&
-      matchesOwnership
+      new Date(task.dueDate) <
+      new Date()
     );
-  });
+  };
 
+  // =========================================================
+  // COMPLETE / UNDO TASK
+  // =========================================================
 
-  // COMPLETE / UNDO--------//
-  const handleCompleteTask = async (task) => {
+  const handleCompleteTask = async (
+    task
+  ) => {
     const taskId = task._id;
 
     if (!taskId) return;
@@ -344,42 +559,49 @@ function Dashboard() {
       setActionLoading(taskId);
 
       const isCompleted =
-        task.status === "completed";
+        task.status ===
+        "completed";
 
-      const newStatus = isCompleted
-        ? "pending"
-        : "completed";
+      const newStatus =
+        isCompleted
+          ? "pending"
+          : "completed";
 
-      const newProgress = isCompleted
-        ? 0
-        : 100;
+      const newProgress =
+        isCompleted ? 0 : 100;
 
-      const response = await API.put(
-        `/tasks/${taskId}`,
-        {
-          status: newStatus,
-          progress: newProgress,
-        }
-      );
+      const response =
+        await API.put(
+          `/tasks/${taskId}`,
+          {
+            status: newStatus,
+            progress:
+              newProgress,
+          }
+        );
 
       console.log(
         "Task updated:",
         response.data
       );
 
-      setTasks((prevTasks) =>
-        prevTasks.map((item) =>
-          item._id === taskId
-            ? {
-              ...item,
-              status: newStatus,
-              progress: newProgress,
-            }
-            : item
-        )
+      setTasks(
+        (prevTasks) =>
+          prevTasks.map(
+            (item) =>
+              item._id === taskId
+                ? {
+                    ...item,
+                    status:
+                      newStatus,
+                    progress:
+                      newProgress,
+                  }
+                : item
+          )
       );
 
-      // Refresh statistics after update
+      // Refresh statistics
       await fetchStats();
     } catch (error) {
       console.error(
@@ -387,52 +609,69 @@ function Dashboard() {
         error
       );
 
-      if (error.response?.status === 401) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("currentUser");
+      if (
+        error.response?.status === 401
+      ) {
+        localStorage.removeItem(
+          "token"
+        );
+
+        localStorage.removeItem(
+          "currentUser"
+        );
+
         navigate("/login");
+
         return;
       }
 
       alert(
         error.response?.data?.message ||
-        "Failed to update task."
+          "Failed to update task."
       );
     } finally {
       setActionLoading(null);
     }
   };
 
+  // =========================================================
+  // DELETE TASK
+  // =========================================================
 
-  //-------- DELETE---------------//
-  const handleDeleteTask = async (taskId) => {
+  const handleDeleteTask = async (
+    taskId
+  ) => {
     if (!taskId) return;
 
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this task?"
-    );
+    const confirmed =
+      window.confirm(
+        "Are you sure you want to delete this task?"
+      );
 
     if (!confirmed) return;
 
     try {
       setActionLoading(taskId);
 
-      const response = await API.delete(
-        `/tasks/${taskId}`
-      );
+      const response =
+        await API.delete(
+          `/tasks/${taskId}`
+        );
 
       console.log(
         "Task deleted:",
         response.data
       );
 
-      setTasks((prevTasks) =>
-        prevTasks.filter(
-          (task) => task._id !== taskId
-        )
+      setTasks(
+        (prevTasks) =>
+          prevTasks.filter(
+            (task) =>
+              task._id !== taskId
+          )
       );
 
-      // Refresh statistics after deletion
+      // Refresh statistics
       await fetchStats();
     } catch (error) {
       console.error(
@@ -440,46 +679,69 @@ function Dashboard() {
         error
       );
 
-      if (error.response?.status === 401) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("currentUser");
+      if (
+        error.response?.status === 401
+      ) {
+        localStorage.removeItem(
+          "token"
+        );
+
+        localStorage.removeItem(
+          "currentUser"
+        );
+
         navigate("/login");
+
         return;
       }
 
       alert(
         error.response?.data?.message ||
-        "Failed to delete task."
+          "Failed to delete task."
       );
     } finally {
       setActionLoading(null);
     }
   };
 
-
+  // =========================================================
+  // UI
+  // =========================================================
 
   return (
     <div className="d-flex flex-column min-vh-100 bg-light">
 
+      {/* =====================================================
+          HEADER
+      ===================================================== */}
+
       <Header showNav={true} />
+
+      {/* =====================================================
+          MAIN
+      ===================================================== */}
 
       <main className="flex-grow-1 py-4">
 
         <div className="container">
 
-          {/* **HEADER*****/}
+          {/* =================================================
+              DASHBOARD HEADER
+          ================================================= */}
 
           <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
 
             <div>
+
               <h3 className="fw-bold mb-1">
                 Dashboard
               </h3>
 
               <p className="text-muted mb-0">
-                Manage your tasks and track your
-                productivity.
+                Manage your tasks and
+                track your productivity.
               </p>
+
             </div>
 
             <div className="d-flex align-items-center gap-2">
@@ -490,11 +752,14 @@ function Dashboard() {
                 {planInfo.label} Plan
               </span>
 
-              {userPlan !== "ultimate" && (
+              {userPlan !==
+                "ultimate" && (
                 <button
                   className="btn btn-outline-primary btn-sm"
                   onClick={() =>
-                    navigate("/pricing")
+                    navigate(
+                      "/pricing"
+                    )
                   }
                 >
                   Upgrade
@@ -505,7 +770,9 @@ function Dashboard() {
 
           </div>
 
-          {/* PLAN USAGE */}
+          {/* =================================================
+              PLAN USAGE
+          ================================================= */}
 
           <div className="card border-0 shadow-sm mb-4">
 
@@ -519,74 +786,96 @@ function Dashboard() {
 
                 <span className="text-muted small">
                   {totalTasks} /{" "}
-                  {formatLimit(userPlan)}
+                  {formatLimit(
+                    userPlan
+                  )}
                 </span>
 
               </div>
 
               <div
                 className="progress"
-                style={{ height: "7px" }}
+                style={{
+                  height: "7px",
+                }}
               >
+
                 <div
                   className="progress-bar"
                   style={{
                     width: `${Math.min(
                       (totalTasks /
                         (Number(
-                          formatLimit(userPlan)
+                          formatLimit(
+                            userPlan
+                          )
                         ) || 100)) *
-                      100,
+                        100,
                       100
                     )}%`,
                   }}
                 />
+
               </div>
 
             </div>
 
           </div>
 
-          {/* STATISTICS*/}
+          {/* =================================================
+              STATISTICS
+          ================================================= */}
 
           <div className="row g-3 mb-4">
 
             {[
               {
                 title: "Total Tasks",
-                value: totalTasks,
+                value:
+                  totalTasks,
                 icon: "📋",
-                className: "text-primary",
+                className:
+                  "text-primary",
               },
               {
                 title: "My Tasks",
-                value: myOwnTasks,
+                value:
+                  myOwnTasks,
                 icon: "👤",
-                className: "text-info",
+                className:
+                  "text-info",
               },
               {
                 title: "Shared",
-                value: sharedTasks,
+                value:
+                  sharedTasks,
                 icon: "👥",
-                className: "text-purple",
+                className:
+                  "text-purple",
               },
               {
                 title: "Completed",
-                value: completedTasks,
+                value:
+                  completedTasks,
                 icon: "✓",
-                className: "text-success",
+                className:
+                  "text-success",
               },
               {
                 title: "Pending",
-                value: pendingTasks,
+                value:
+                  pendingTasks,
                 icon: "⏳",
-                className: "text-warning",
+                className:
+                  "text-warning",
               },
               {
                 title: "Overdue",
-                value: overdueTasks,
+                value:
+                  overdueTasks,
                 icon: "⚠",
-                className: "text-danger",
+                className:
+                  "text-danger",
               },
             ].map((stat) => (
 
@@ -627,7 +916,13 @@ function Dashboard() {
 
           </div>
 
+          {/* =================================================
+              PROGRESS CARDS
+          ================================================= */}
+
           <div className="row g-3 mb-4">
+
+            {/* COMPLETION RATE */}
 
             <div className="col-md-6">
 
@@ -642,14 +937,19 @@ function Dashboard() {
                     </span>
 
                     <span className="fw-bold text-success">
-                      {completionPercentage}%
+                      {
+                        completionPercentage
+                      }
+                      %
                     </span>
 
                   </div>
 
                   <div
                     className="progress"
-                    style={{ height: "7px" }}
+                    style={{
+                      height: "7px",
+                    }}
                   >
 
                     <div
@@ -667,6 +967,8 @@ function Dashboard() {
 
             </div>
 
+            {/* AVERAGE PROGRESS */}
+
             <div className="col-md-6">
 
               <div className="card border-0 shadow-sm">
@@ -676,18 +978,24 @@ function Dashboard() {
                   <div className="d-flex justify-content-between mb-2">
 
                     <span className="fw-semibold">
-                      Average Task Progress
+                      Average Task
+                      Progress
                     </span>
 
                     <span className="fw-bold text-primary">
-                      {averageProgress}%
+                      {
+                        averageProgress
+                      }
+                      %
                     </span>
 
                   </div>
 
                   <div
                     className="progress"
-                    style={{ height: "7px" }}
+                    style={{
+                      height: "7px",
+                    }}
                   >
 
                     <div
@@ -707,12 +1015,13 @@ function Dashboard() {
 
           </div>
 
-          {/*
-              =------ANALYTICS + QUICK ACTIONS----*/}
+          {/* =================================================
+              ANALYTICS + QUICK ACTIONS
+          ================================================= */}
 
           <div className="row g-4 mb-4">
 
-            {/* Analytics */}
+            {/* ANALYTICS */}
 
             <div className="col-lg-7">
 
@@ -723,25 +1032,31 @@ function Dashboard() {
                   <div className="d-flex justify-content-between align-items-center mb-3">
 
                     <div>
+
                       <h5 className="fw-bold mb-1">
                         Task Analytics
                       </h5>
 
                       <small className="text-muted">
-                        Current task distribution
+                        Current task
+                        distribution
                       </small>
+
                     </div>
 
                     <span className="badge bg-light text-dark">
-                      {totalTasks} Tasks
+                      {totalTasks}{" "}
+                      Tasks
                     </span>
 
                   </div>
 
-                  {totalTasks === 0 ? (
+                  {totalTasks ===
+                  0 ? (
 
                     <div className="text-center py-5 text-muted">
-                      No task data available.
+                      No task data
+                      available.
                     </div>
 
                   ) : (
@@ -754,22 +1069,35 @@ function Dashboard() {
                       <PieChart>
 
                         <Pie
-                          data={chartData}
+                          data={
+                            chartData
+                          }
                           cx="50%"
                           cy="45%"
-                          outerRadius={85}
+                          outerRadius={
+                            85
+                          }
                           dataKey="value"
                           label
                         >
 
                           {chartData.map(
-                            (entry, index) => (
+                            (
+                              entry,
+                              index
+                            ) => (
+
                               <Cell
-                                key={entry.name}
+                                key={
+                                  entry.name
+                                }
                                 fill={
-                                  COLORS[index]
+                                  COLORS[
+                                    index
+                                  ]
                                 }
                               />
+
                             )
                           )}
 
@@ -796,7 +1124,7 @@ function Dashboard() {
 
             </div>
 
-            {/* Quick Actions */}
+            {/* QUICK ACTIONS */}
 
             <div className="col-lg-5">
 
@@ -809,8 +1137,9 @@ function Dashboard() {
                   </h5>
 
                   <p className="text-muted small mb-4">
-                    Access your most important
-                    Taskify features.
+                    Access your most
+                    important Taskify
+                    features.
                   </p>
 
                   <div className="d-grid gap-3">
@@ -818,7 +1147,9 @@ function Dashboard() {
                     <button
                       className="btn btn-primary py-2"
                       onClick={() =>
-                        navigate("/create-task")
+                        navigate(
+                          "/create-task"
+                        )
                       }
                     >
                       + Create New Task
@@ -827,7 +1158,9 @@ function Dashboard() {
                     <button
                       className="btn btn-outline-primary py-2"
                       onClick={() =>
-                        navigate("/taskpilot")
+                        navigate(
+                          "/taskpilot"
+                        )
                       }
                     >
                       🤖 TaskPilot AI
@@ -843,13 +1176,19 @@ function Dashboard() {
 
           </div>
 
-          {/* -------TASKPILOT BANNER--------- */}
+          {/* =================================================
+              TASKPILOT BANNER
+          ================================================= */}
 
           <div
             className="card border-0 shadow-sm mb-4"
-            style={{ cursor: "pointer" }}
+            style={{
+              cursor: "pointer",
+            }}
             onClick={() =>
-              navigate("/taskpilot")
+              navigate(
+                "/taskpilot"
+              )
             }
           >
 
@@ -868,9 +1207,12 @@ function Dashboard() {
                   </h5>
 
                   <p className="text-muted mb-0">
-                    Get intelligent task suggestions,
-                    productivity insights and recovery
-                    plans for at-risk tasks.
+                    Get intelligent task
+                    suggestions,
+                    productivity
+                    insights and
+                    recovery plans for
+                    at-risk tasks.
                   </p>
 
                 </div>
@@ -889,185 +1231,46 @@ function Dashboard() {
 
           </div>
 
+          {/* =================================================
+              RECENT & IMPORTANT TASKS HEADER
+          ================================================= */}
 
           <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
 
             <div>
+
               <h5 className="fw-bold mb-1">
-                Your Tasks
+                Recent & Important
+                Tasks
               </h5>
 
               <small className="text-muted">
-                {filteredTasks.length} of{" "}
-                {totalTasks} tasks shown
+                Your most important
+                tasks at a glance
               </small>
+
             </div>
 
             <button
-              className="btn btn-primary btn-sm"
+              className="btn btn-outline-primary btn-sm"
               onClick={() =>
-                navigate("/create-task")
+                navigate(
+                  "/my-tasks"
+                )
               }
             >
-              + Add Task
+              View All Tasks →
             </button>
 
           </div>
 
-          <div className="card border-0 shadow-sm mb-4">
-
-            <div className="card-body">
-
-              <div className="row g-2">
-
-                <div className="col-lg-3">
-
-                  <div className="input-group">
-
-                    <span className="input-group-text bg-white">
-                      🔍
-                    </span>
-
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Search tasks..."
-                      value={search}
-                      onChange={(e) =>
-                        setSearch(
-                          e.target.value
-                        )
-                      }
-                    />
-
-                  </div>
-
-                </div>
-
-                <div className="col-lg-3">
-
-                  <select
-                    className="form-select"
-                    value={ownershipFilter}
-                    onChange={(e) =>
-                      setOwnershipFilter(
-                        e.target.value
-                      )
-                    }
-                  >
-
-                    <option value="All">
-                      All Tasks
-                    </option>
-
-                    <option value="My Tasks">
-                      My Tasks
-                    </option>
-
-                    <option value="Shared">
-                      Shared With Me
-                    </option>
-
-                  </select>
-
-                </div>
-
-                <div className="col-lg-3">
-
-                  <select
-                    className="form-select"
-                    value={priorityFilter}
-                    onChange={(e) =>
-                      setPriorityFilter(
-                        e.target.value
-                      )
-                    }
-                  >
-
-                    <option value="All">
-                      All Priorities
-                    </option>
-
-                    <option value="High">
-                      High
-                    </option>
-
-                    <option value="Medium">
-                      Medium
-                    </option>
-
-                    <option value="Low">
-                      Low
-                    </option>
-
-                  </select>
-
-                </div>
-
-                <div className="col-lg-3">
-
-                  <select
-                    className="form-select"
-                    value={statusFilter}
-                    onChange={(e) =>
-                      setStatusFilter(
-                        e.target.value
-                      )
-                    }
-                  >
-
-                    <option value="All">
-                      All Status
-                    </option>
-
-                    <option value="Pending">
-                      Pending
-                    </option>
-
-                    <option value="In Progress">
-                      In Progress
-                    </option>
-
-                    <option value="Completed">
-                      Completed
-                    </option>
-
-                  </select>
-
-                </div>
-
-              </div>
-
-              {(search ||
-                priorityFilter !== "All" ||
-                statusFilter !== "All" ||
-                ownershipFilter !== "All") && (
-
-                  <div className="mt-3">
-
-                    <button
-                      className="btn btn-sm btn-outline-secondary"
-                      onClick={() => {
-                        setSearch("");
-                        setPriorityFilter("All");
-                        setStatusFilter("All");
-                        setOwnershipFilter("All");
-                      }}
-                    >
-                      ✕ Clear Filters
-                    </button>
-
-                  </div>
-
-                )}
-
-            </div>
-
-          </div>
+          {/* =================================================
+              RECENT TASKS
+          ================================================= */}
 
           {loading ? (
 
-            <div className="card border-0 shadow-sm">
+            <div className="card border-0 shadow-sm mb-4">
 
               <div className="card-body text-center py-5">
 
@@ -1077,49 +1280,49 @@ function Dashboard() {
                 />
 
                 <p className="text-muted mt-3 mb-0">
-                  Loading your tasks...
+                  Loading recent
+                  tasks...
                 </p>
 
               </div>
 
             </div>
 
-          ) : filteredTasks.length === 0 ? (
+          ) : recentImportantTasks.length ===
+            0 ? (
 
-            /*NO TASKS*/
-
-            <div className="card border-0 shadow-sm">
+            <div className="card border-0 shadow-sm mb-4">
 
               <div className="card-body text-center py-5">
 
                 <div
                   style={{
-                    fontSize: "45px",
+                    fontSize:
+                      "45px",
                   }}
                 >
                   📭
                 </div>
 
                 <h5 className="fw-bold mt-3">
-                  No tasks found
+                  No tasks yet
                 </h5>
 
                 <p className="text-muted">
-                  {tasks.length === 0
-                    ? "Create your first task to get started."
-                    : "Try changing your filters."}
+                  Create your first
+                  task to get started.
                 </p>
 
-                {tasks.length === 0 && (
-                  <button
-                    className="btn btn-primary"
-                    onClick={() =>
-                      navigate("/create-task")
-                    }
-                  >
-                    + Create Task
-                  </button>
-                )}
+                <button
+                  className="btn btn-primary"
+                  onClick={() =>
+                    navigate(
+                      "/create-task"
+                    )
+                  }
+                >
+                  + Create Task
+                </button>
 
               </div>
 
@@ -1127,318 +1330,391 @@ function Dashboard() {
 
           ) : (
 
-            /* TASK CARDS*/
+            <div className="row g-3 mb-4">
 
-            <div className="row g-3">
+              {recentImportantTasks.map(
+                (task) => {
 
-              {filteredTasks.map((task) => {
+                  const taskId =
+                    task._id;
 
-                const taskId = task._id;
+                  const createdById =
+                    getUserId(
+                      task.createdBy
+                    );
 
-                const createdById =
-                  getUserId(task.createdBy);
+                  const isShared =
+                    createdById !==
+                    currentUserId;
 
-                const isShared =
-                  createdById !==
-                  currentUserId;
+                  const isActionLoading =
+                    actionLoading ===
+                    taskId;
 
-                const isActionLoading =
-                  actionLoading === taskId;
+                  const progress =
+                    task.progress ??
+                    (task.status ===
+                    "completed"
+                      ? 100
+                      : 0);
 
-                const progress =
-                  task.progress ??
-                  (task.status === "completed"
-                    ? 100
-                    : 0);
+                  const overdue =
+                    isTaskOverdue(
+                      task
+                    );
 
-                return (
+                  return (
 
-                  <div
-                    className="col-lg-6"
-                    key={taskId}
-                  >
+                    <div
+                      className="col-lg-6"
+                      key={taskId}
+                    >
 
-                    <div className="card border-0 shadow-sm h-100">
+                      <div className="card border-0 shadow-sm h-100">
 
-                      <div className="card-body p-4">
+                        <div className="card-body p-4">
 
-                        {/* Title */}
+                          {/* =================================
+                              TITLE
+                          ================================= */}
 
-                        <div className="d-flex justify-content-between align-items-start gap-2 mb-2">
+                          <div className="d-flex justify-content-between align-items-start gap-2 mb-2">
 
-                          <div>
+                            <div>
 
-                            <div className="d-flex align-items-center gap-2 flex-wrap">
+                              <div className="d-flex align-items-center gap-2 flex-wrap">
 
-                              <h5 className="fw-bold mb-0">
-                                {task.title}
-                              </h5>
+                                <h5 className="fw-bold mb-0">
+                                  {
+                                    task.title
+                                  }
+                                </h5>
 
-                              {isShared && (
-                                <span className="badge bg-info-subtle text-info-emphasis">
-                                  👥 Shared
-                                </span>
-                              )}
+                                {isShared && (
+                                  <span className="badge bg-info-subtle text-info-emphasis">
+                                    👥 Shared
+                                  </span>
+                                )}
 
-                            </div>
-
-                          </div>
-
-                          <span
-                            className={`badge ${getPriorityClass(
-                              task.priority
-                            )}`}
-                          >
-                            {formatPriority(
-                              task.priority
-                            )}
-                          </span>
-
-                        </div>
-
-                        {/* Description */}
-
-                        <p className="text-muted small mb-3">
-                          {task.description ||
-                            "No description available."}
-                        </p>
-
-                        {/* Meta */}
-
-                        <div className="d-flex flex-wrap gap-2 mb-3">
-
-                          {task.category && (
-                            <span className="badge bg-light text-dark border">
-                              📁 {task.category}
-                            </span>
-                          )}
-
-                          {task.dueDate && (
-                            <span className="badge bg-light text-dark border">
-                              📅{" "}
-                              {new Date(
-                                task.dueDate
-                              ).toLocaleDateString()}
-                            </span>
-                          )}
-
-                          <span
-                            className={`badge ${getStatusClass(
-                              task.status
-                            )}`}
-                          >
-                            {formatStatus(
-                              task.status
-                            )}
-                          </span>
-
-                        </div>
-
-                        {/* Progress */}
-
-                        <div className="mb-3">
-
-                          <div className="d-flex justify-content-between mb-1">
-
-                            <small className="fw-semibold">
-                              Progress
-                            </small>
-
-                            <small className="text-muted">
-                              {progress}%
-                            </small>
-
-                          </div>
-
-                          <div
-                            className="progress"
-                            style={{
-                              height: "7px",
-                            }}
-                          >
-
-                            <div
-                              className={`progress-bar ${progress === 100
-                                ? "bg-success"
-                                : "bg-primary"
-                                }`}
-                              style={{
-                                width: `${progress}%`,
-                              }}
-                            />
-
-                          </div>
-
-                        </div>
-
-                        {/* Assignment */}
-
-                        <div
-                          className="border-top pt-3 mb-3"
-                          style={{
-                            fontSize: "12px",
-                          }}
-                        >
-
-                          <div className="row g-2">
-
-                            <div className="col-6">
-
-                              <span className="text-muted d-block">
-                                Created by
-                              </span>
-
-                              <strong>
-                                {task.createdBy
-                                  ?.username ||
-                                  task.createdBy
-                                    ?.email ||
-                                  "Unknown"}
-                              </strong>
-
-                            </div>
-
-                            <div className="col-6">
-
-                              <span className="text-muted d-block">
-                                Assigned to
-                              </span>
-
-                              <strong>
-                                {task.assignedTo
-                                  ?.username ||
-                                  task.assignedTo
-                                    ?.email ||
-                                  "Not Assigned"}
-                              </strong>
-
-                            </div>
-
-                          </div>
-
-                        </div>
-
-                        {/* Participants */}
-
-                        {task.participants &&
-                          task.participants.length >
-                          0 && (
-
-                            <div className="mb-3">
-
-                              <small className="text-muted d-block mb-2">
-                                Team members
-                              </small>
-
-                              <div className="d-flex align-items-center">
-
-                                {task.participants
-                                  .slice(0, 5)
-                                  .map(
-                                    (
-                                      participant,
-                                      index
-                                    ) => {
-
-                                      const name =
-                                        participant?.username ||
-                                        participant?.email ||
-                                        "User";
-
-                                      return (
-
-                                        <span
-                                          key={
-                                            participant?._id ||
-                                            index
-                                          }
-                                          title={name}
-                                          className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
-                                          style={{
-                                            width:
-                                              "28px",
-                                            height:
-                                              "28px",
-                                            fontSize:
-                                              "11px",
-                                            fontWeight:
-                                              "bold",
-                                            marginRight:
-                                              "-5px",
-                                            border:
-                                              "2px solid white",
-                                          }}
-                                        >
-                                          {name
-                                            .charAt(
-                                              0
-                                            )
-                                            .toUpperCase()}
-                                        </span>
-
-                                      );
-                                    }
-                                  )}
+                                {overdue && (
+                                  <span className="badge bg-danger-subtle text-danger">
+                                    ⚠ Overdue
+                                  </span>
+                                )}
 
                               </div>
 
                             </div>
 
-                          )}
+                            <span
+                              className={`badge ${getPriorityClass(
+                                task.priority
+                              )}`}
+                            >
+                              {formatPriority(
+                                task.priority
+                              )}
+                            </span>
 
-                        {/* Actions */}
+                          </div>
 
-                        <div className="d-flex gap-2 flex-wrap">
+                          {/* =================================
+                              DESCRIPTION
+                          ================================= */}
 
-                          <button
-                            className={`btn btn-sm ${task.status ===
-                              "completed"
-                              ? "btn-outline-secondary"
-                              : "btn-success"
-                              }`}
-                            onClick={() =>
-                              handleCompleteTask(
-                                task
-                              )
-                            }
-                            disabled={
-                              isActionLoading
-                            }
-                          >
+                          <p className="text-muted small mb-3">
+                            {task.description ||
+                              "No description available."}
+                          </p>
 
-                            {isActionLoading ? (
-                              <>
-                                <span
-                                  className="spinner-border spinner-border-sm me-1"
-                                  role="status"
-                                />
-                                Updating...
-                              </>
-                            ) : task.status ===
-                              "completed" ? (
-                              "↩ Undo"
-                            ) : (
-                              "✓ Complete"
+                          {/* =================================
+                              META
+                          ================================= */}
+
+                          <div className="d-flex flex-wrap gap-2 mb-3">
+
+                            {task.category && (
+                              <span className="badge bg-light text-dark border">
+                                📁{" "}
+                                {
+                                  task.category
+                                }
+                              </span>
                             )}
 
-                          </button>
+                            {task.dueDate && (
+                              <span
+                                className={`badge ${
+                                  overdue
+                                    ? "bg-danger-subtle text-danger"
+                                    : "bg-light text-dark border"
+                                }`}
+                              >
+                                📅{" "}
+                                {new Date(
+                                  task.dueDate
+                                ).toLocaleDateString()}
+                              </span>
+                            )}
 
-                          <button
-                            className="btn btn-sm btn-outline-warning"
-                            onClick={() =>
-                              navigate(
-                                `/task/${taskId}`
-                              )
-                            }
-                            disabled={
-                              isActionLoading
-                            }
+                            <span
+                              className={`badge ${getStatusClass(
+                                task.status
+                              )}`}
+                            >
+                              {formatStatus(
+                                task.status
+                              )}
+                            </span>
+
+                          </div>
+
+                          {/* =================================
+                              PROGRESS
+                          ================================= */}
+
+                          <div className="mb-3">
+
+                            <div className="d-flex justify-content-between mb-1">
+
+                              <small className="fw-semibold">
+                                Progress
+                              </small>
+
+                              <small className="text-muted">
+                                {
+                                  progress
+                                }
+                                %
+                              </small>
+
+                            </div>
+
+                            <div
+                              className="progress"
+                              style={{
+                                height:
+                                  "7px",
+                              }}
+                            >
+
+                              <div
+                                className={`progress-bar ${
+                                  progress ===
+                                  100
+                                    ? "bg-success"
+                                    : "bg-primary"
+                                }`}
+                                style={{
+                                  width: `${progress}%`,
+                                }}
+                              />
+
+                            </div>
+
+                          </div>
+
+                          {/* =================================
+                              ASSIGNMENT
+                          ================================= */}
+
+                          <div
+                            className="border-top pt-3 mb-3"
+                            style={{
+                              fontSize:
+                                "12px",
+                            }}
                           >
-                            ✏️ Edit
-                          </button>
 
-                          {createdById ===
-                            currentUserId && (
+                            <div className="row g-2">
+
+                              <div className="col-6">
+
+                                <span className="text-muted d-block">
+                                  Created by
+                                </span>
+
+                                <strong>
+                                  {task
+                                    .createdBy
+                                    ?.username ||
+                                    task
+                                      .createdBy
+                                      ?.email ||
+                                    "Unknown"}
+                                </strong>
+
+                              </div>
+
+                              <div className="col-6">
+
+                                <span className="text-muted d-block">
+                                  Assigned to
+                                </span>
+
+                                <strong>
+                                  {task
+                                    .assignedTo
+                                    ?.username ||
+                                    task
+                                      .assignedTo
+                                      ?.email ||
+                                    "Not Assigned"}
+                                </strong>
+
+                              </div>
+
+                            </div>
+
+                          </div>
+
+                          {/* =================================
+                              PARTICIPANTS
+                          ================================= */}
+
+                          {task.participants &&
+                            task.participants
+                              .length >
+                              0 && (
+
+                              <div className="mb-3">
+
+                                <small className="text-muted d-block mb-2">
+                                  Team members
+                                </small>
+
+                                <div className="d-flex align-items-center">
+
+                                  {task.participants
+                                    .slice(
+                                      0,
+                                      5
+                                    )
+                                    .map(
+                                      (
+                                        participant,
+                                        index
+                                      ) => {
+
+                                        const name =
+                                          participant?.username ||
+                                          participant?.email ||
+                                          "User";
+
+                                        return (
+
+                                          <span
+                                            key={
+                                              participant?._id ||
+                                              index
+                                            }
+                                            title={
+                                              name
+                                            }
+                                            className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+                                            style={{
+                                              width:
+                                                "28px",
+                                              height:
+                                                "28px",
+                                              fontSize:
+                                                "11px",
+                                              fontWeight:
+                                                "bold",
+                                              marginRight:
+                                                "-5px",
+                                              border:
+                                                "2px solid white",
+                                            }}
+                                          >
+                                            {name
+                                              .charAt(
+                                                0
+                                              )
+                                              .toUpperCase()}
+                                          </span>
+
+                                        );
+                                      }
+                                    )}
+
+                                </div>
+
+                              </div>
+
+                            )}
+
+                          {/* =================================
+                              ACTIONS
+                          ================================= */}
+
+                          <div className="d-flex gap-2 flex-wrap">
+
+                            {/* COMPLETE */}
+
+                            <button
+                              className={`btn btn-sm ${
+                                task.status ===
+                                "completed"
+                                  ? "btn-outline-secondary"
+                                  : "btn-success"
+                              }`}
+                              onClick={() =>
+                                handleCompleteTask(
+                                  task
+                                )
+                              }
+                              disabled={
+                                isActionLoading
+                              }
+                            >
+
+                              {isActionLoading ? (
+
+                                <>
+
+                                  <span
+                                    className="spinner-border spinner-border-sm me-1"
+                                    role="status"
+                                  />
+
+                                  Updating...
+
+                                </>
+
+                              ) : task.status ===
+                                "completed" ? (
+
+                                "↩ Undo"
+
+                              ) : (
+
+                                "✓ Complete"
+
+                              )}
+
+                            </button>
+
+                            {/* EDIT */}
+
+                            <button
+                              className="btn btn-sm btn-outline-warning"
+                              onClick={() =>
+                                navigate(
+                                  `/task/${taskId}`
+                                )
+                              }
+                              disabled={
+                                isActionLoading
+                              }
+                            >
+                              ✏️ Edit
+                            </button>
+
+                            {/* DELETE */}
+
+                            {createdById ===
+                              currentUserId && (
 
                               <button
                                 className="btn btn-sm btn-outline-danger"
@@ -1453,20 +1729,29 @@ function Dashboard() {
                               >
 
                                 {isActionLoading ? (
+
                                   <>
+
                                     <span
                                       className="spinner-border spinner-border-sm me-1"
                                       role="status"
                                     />
+
                                     Deleting...
+
                                   </>
+
                                 ) : (
+
                                   "🗑 Delete"
+
                                 )}
 
                               </button>
 
                             )}
+
+                          </div>
 
                         </div>
 
@@ -1474,18 +1759,43 @@ function Dashboard() {
 
                     </div>
 
-                  </div>
-
-                );
-              })}
+                  );
+                }
+              )}
 
             </div>
 
           )}
 
+          {/* =================================================
+              VIEW ALL TASKS
+          ================================================= */}
+
+          {tasks.length > 5 && (
+            <div className="text-center mb-4">
+
+              <button
+                className="btn btn-outline-primary px-4"
+                onClick={() =>
+                  navigate(
+                    "/my-tasks"
+                  )
+                }
+              >
+                View All {tasks.length}{" "}
+                Tasks →
+              </button>
+
+            </div>
+          )}
+
         </div>
 
       </main>
+
+      {/* =====================================================
+          FOOTER
+      ===================================================== */}
 
       <Footer />
 
