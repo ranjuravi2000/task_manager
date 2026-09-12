@@ -1,4 +1,3 @@
-
 import { Link, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
@@ -6,65 +5,69 @@ import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useState } from "react";
+import API from "../api/axiosInstance";
 
 function Login() {
   const navigate = useNavigate();
 
-  const [showPassword, setShowPassword] =
-    useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [loginError, setLoginError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const [loginError, setLoginError] =
-    useState("");
+  const validationSchema = Yup.object({
+    username: Yup.string()
+      .required("Email is required"),
 
-  const validationSchema =
-    Yup.object({
-      username: Yup.string()
-        .required(
-          "Username or Email is required"
-        ),
+    password: Yup.string()
+      .min(8, "Password must be at least 8 characters")
+      .required("Password is required"),
+  });
 
-      password: Yup.string()
-        .min(
-          8,
-          "Password must be at least 8 characters"
-        )
-        .required(
-          "Password is required"
-        ),
-    });
-
-  const handleLogin = (values) => {
+  const handleLogin = async (values) => {
     setLoginError("");
+    setLoading(true);
 
-    const trimmedInput =
-      values.username.trim();
+    try {
+      const email = values.username.trim();
+      const password = values.password.trim();
 
-    const trimmedPassword =
-      values.password.trim();
+      // Send login request to backend
+      const response = await API.post("/auth/login", {
+        email,
+        password,
+      });
 
-    const users =
-      JSON.parse(
-        localStorage.getItem("users")
-      ) || [];
+      console.log("Login response:", response.data);
 
-    const user = users.find(
-      (u) =>
-        (u.username === trimmedInput ||
-          u.email === trimmedInput) &&
-        u.password === trimmedPassword
-    );
+      // Store JWT token
+      localStorage.setItem("token", response.data.token);
 
-    if (user) {
-      localStorage.setItem(
-        "currentUser",
-        JSON.stringify(user)
-      );
+      // Store logged-in user
+      if (response.data.user) {
+        localStorage.setItem(
+          "currentUser",
+          JSON.stringify(response.data.user)
+        );
+      }
 
+      // Go to dashboard
       navigate("/dashboard");
-    } else {
-      setLoginError(
-        "Invalid username/email or password."
-      );
+
+    } catch (error) {
+      console.error("Login error:", error);
+
+      if (error.response) {
+        setLoginError(
+          error.response.data.message ||
+          "Invalid email or password."
+        );
+      } else {
+        setLoginError(
+          "Unable to connect to the server. Please try again."
+        );
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -102,9 +105,7 @@ function Login() {
                   username: "",
                   password: "",
                 }}
-                validationSchema={
-                  validationSchema
-                }
+                validationSchema={validationSchema}
                 onSubmit={handleLogin}
               >
                 {({
@@ -114,14 +115,14 @@ function Login() {
                   <Form>
 
                     <label className="form-label fw-semibold mb-1">
-                      Username or Email{" "}
+                      Email{" "}
                       <span className="text-danger">
                         *
                       </span>
                     </label>
 
                     <Field
-                      type="text"
+                      type="email"
                       name="username"
                       className={`form-control mb-1 ${
                         touched.username &&
@@ -131,7 +132,7 @@ function Login() {
                           ? "is-valid"
                           : ""
                       }`}
-                      placeholder="Enter username or email"
+                      placeholder="Enter your email"
                     />
 
                     <ErrorMessage
@@ -177,9 +178,7 @@ function Login() {
                         className="form-check-input"
                         type="checkbox"
                         id="showPassword"
-                        checked={
-                          showPassword
-                        }
+                        checked={showPassword}
                         onChange={() =>
                           setShowPassword(
                             !showPassword
@@ -206,8 +205,9 @@ function Login() {
                     <button
                       type="submit"
                       className="btn btn-primary w-100"
+                      disabled={loading}
                     >
-                      Login
+                      {loading ? "Logging in..." : "Login"}
                     </button>
 
                   </Form>
@@ -238,4 +238,4 @@ function Login() {
   );
 }
 
-export default Login
+export default Login;

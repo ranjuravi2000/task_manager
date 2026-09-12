@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 function Footer() {
   const year = new Date().getFullYear();
@@ -8,30 +8,48 @@ function Footer() {
       <div className="container">
         <div className="row align-items-center">
 
-          {/*---logo----- */}
-          <div className="col-md-4 mb-3 mb-md-0">
+          {/* Logo / Description */}
+          <div className="col-12 col-md-4 text-center text-md-start mb-3 mb-md-0">
             <h5 className="fw-bold mb-1">✔㆜αടƙι⨍ყ</h5>
+
             <small className="text-white-50">
               Smart Collaborative Task Management System
             </small>
           </div>
 
-          <div className="col-md-4 text-center mb-3 mb-md-0">
-            <div className="d-flex justify-content-center gap-3">
-              <a href="#" className="text-white-50 text-decoration-none" style={{ fontSize: "13px" }}>
+          {/* Footer Links */}
+          <div className="col-12 col-md-4 text-center mb-3 mb-md-0">
+            <div className="d-flex justify-content-center align-items-center gap-3 flex-wrap">
+
+              <Link
+                to="/about"
+                className="text-white-50 text-decoration-none"
+                style={{ fontSize: "13px" }}
+              >
                 About
-              </a>
-              <a href="#" className="text-white-50 text-decoration-none" style={{ fontSize: "13px" }}>
+              </Link>
+
+              <Link
+                to="/privacy"
+                className="text-white-50 text-decoration-none"
+                style={{ fontSize: "13px" }}
+              >
                 Privacy
-              </a>
-              <a href="#" className="text-white-50 text-decoration-none" style={{ fontSize: "13px" }}>
+              </Link>
+
+              <Link
+                to="/contact"
+                className="text-white-50 text-decoration-none"
+                style={{ fontSize: "13px" }}
+              >
                 Contact
-              </a>
+              </Link>
+
             </div>
           </div>
 
-          {/* ------------Copyright----- */}
-          <div className="col-md-4 text-md-end">
+          {/* Copyright */}
+          <div className="col-12 col-md-4 text-center text-md-end">
             <small className="text-white-50">
               © {year} Taskify. All rights reserved.
             </small>
@@ -43,4 +61,4 @@ function Footer() {
   );
 }
 
-export default Footer
+export default Footer;
