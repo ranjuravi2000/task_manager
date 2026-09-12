@@ -1,4 +1,3 @@
-// Load environment variables FIRST
 require("dotenv").config();
 
 const express = require("express");
@@ -29,7 +28,7 @@ console.log(
     : 0
 );
 
-// Connect MongoDB
+
 connectDB();
 
 const app = express();

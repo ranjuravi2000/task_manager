@@ -44,9 +44,9 @@ function Checkout() {
     );
   }
 
-  // --------------------------------------------------
-  // Format Card Number
-  // --------------------------------------------------
+ 
+  // Format Card Number------------
+ 
   const formatCardNumber = (value) => {
     const digits = value
       .replace(/\D/g, "")
@@ -57,9 +57,7 @@ function Checkout() {
       .trim();
   };
 
-  // --------------------------------------------------
-  // Format Expiry Date
-  // --------------------------------------------------
+  // Format Expiry Date-------------
   const formatExpiry = (value) => {
     const digits = value
       .replace(/\D/g, "")
@@ -72,9 +70,8 @@ function Checkout() {
     return `${digits.slice(0, 2)}/${digits.slice(2)}`;
   };
 
-  // --------------------------------------------------
-  // Validate Single Field
-  // --------------------------------------------------
+  
+  // Validate Single Field------------
   const validateField = (field, value) => {
     let error = "";
 
@@ -143,9 +140,8 @@ function Checkout() {
     return error;
   };
 
-  // --------------------------------------------------
+  
   // Validate Entire Form
-  // --------------------------------------------------
   const validate = () => {
     const newErrors = {};
 
@@ -180,9 +176,8 @@ function Checkout() {
     return Object.keys(newErrors).length === 0;
   };
 
-  // --------------------------------------------------
-  // Name Change
-  // --------------------------------------------------
+  
+  // Name Change----------
   const handleCardNameChange = (e) => {
     const value = e.target.value;
 
@@ -204,9 +199,8 @@ function Checkout() {
     }));
   };
 
-  // --------------------------------------------------
+  
   // Card Number Change
-  // --------------------------------------------------
   const handleCardNumberChange = (e) => {
     const value = formatCardNumber(
       e.target.value
@@ -230,9 +224,8 @@ function Checkout() {
     }));
   };
 
-  // --------------------------------------------------
+  
   // Expiry Change
-  // --------------------------------------------------
   const handleExpiryChange = (e) => {
     const value = formatExpiry(
       e.target.value
@@ -256,9 +249,8 @@ function Checkout() {
     }));
   };
 
-  // --------------------------------------------------
+  
   // CVV Change
-  // --------------------------------------------------
   const handleCvvChange = (e) => {
     const value = e.target.value
       .replace(/\D/g, "")
@@ -282,9 +274,8 @@ function Checkout() {
     }));
   };
 
-  // --------------------------------------------------
+ 
   // Handle Blur
-  // --------------------------------------------------
   const handleBlur = (field, value) => {
     setTouched((prev) => ({
       ...prev,
@@ -302,9 +293,8 @@ function Checkout() {
     }));
   };
 
-  // --------------------------------------------------
+
   // Handle Payment
-  // --------------------------------------------------
   const handlePay = async (e) => {
     e.preventDefault();
 
@@ -338,7 +328,7 @@ function Checkout() {
         ...currentUser,
         subscription: updatedSubscription,
 
-        // Keep old plan property for compatibility
+       
         plan: planId,
       };
 
@@ -374,7 +364,7 @@ function Checkout() {
       <div className="flex-grow-1 bg-light py-4">
         <div className="container">
 
-          {/* Page Header */}
+        
           <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4">
 
             <div>

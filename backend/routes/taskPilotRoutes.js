@@ -11,10 +11,8 @@ const {
 
 const authMiddleware = require("../middleware/authMiddleware");
 
-// --------------------------------------------------
-// GET TASKPILOT AI ANALYSIS
-// --------------------------------------------------
 
+// GET TASKPILOT AI ANALYSIS
 router.get(
   "/",
   authMiddleware,

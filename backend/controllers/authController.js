@@ -1,14 +1,12 @@
 const User = require("../models/User");
 const generateToken = require("../utils/generateToken");
 
-// ===============================
 // Register User
-// ===============================
 const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    // Checking if all fields are provided
+   
     if (!name || !email || !password) {
       return res.status(400).json({
         message: "Please provide name, email and password",
@@ -41,7 +39,7 @@ const registerUser = async (req, res) => {
         createdAt: user.createdAt,
         subscription: user.subscription,
 
-        // Automatically created by timestamps: true
+        
         createdAt: user.createdAt,
       },
     });
@@ -52,9 +50,8 @@ const registerUser = async (req, res) => {
   }
 };
 
-// ===============================
+
 // Login User
-// ===============================
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -66,7 +63,7 @@ const loginUser = async (req, res) => {
       });
     }
 
-    // Find user by email
+    // Find user by email------------//
     const user = await User.findOne({ email });
 
     if (!user) {
@@ -114,21 +111,21 @@ const changePassword = async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
 
-    // Check required fields
+    
     if (!currentPassword || !newPassword) {
       return res.status(400).json({
         message: "Please provide current password and new password",
       });
     }
 
-    // Check minimum password length
+    
     if (newPassword.length < 8) {
       return res.status(400).json({
         message: "New password must be at least 8 characters",
       });
     }
 
-    // req.user comes from protect middleware
+    
     const user = await User.findById(req.user._id);
 
     if (!user) {
@@ -151,7 +148,7 @@ const changePassword = async (req, res) => {
     // Update password
     user.password = newPassword;
 
-    // User.js pre-save middleware will hash it with bcrypt
+    
     await user.save();
 
     res.status(200).json({

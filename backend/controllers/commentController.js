@@ -1,6 +1,6 @@
 const Task = require("../models/Task");
 
-// add comment--------------//
+
 const addComment = async (req, res) => {
     try {
         const { text } = req.body;

@@ -1,29 +1,39 @@
+
 import API from "./axiosInstance";
 
-// Get all notifications-------//
+// Get all notifications
 export const getNotifications = async () => {
-  const response = await API.get("/tasks/notification");
+  const response = await API.get("/notifications");
 
   return response.data;
 };
 
-// Mark notification as read---------//
+// Mark notification as read
 export const markNotificationAsRead = async (
   notificationId
 ) => {
   const response = await API.put(
-    `/tasks/notification/${notificationId}/read`
+    `/notifications/${notificationId}/read`
   );
 
   return response.data;
 };
 
-// Delete notification------//
+// Mark all notifications as read
+export const markAllNotificationsAsRead = async () => {
+  const response = await API.put(
+    "/notifications/read-all"
+  );
+
+  return response.data;
+};
+
+// Delete notification
 export const deleteNotification = async (
   notificationId
 ) => {
   const response = await API.delete(
-    `/tasks/notification/${notificationId}`
+    `/notifications/${notificationId}`
   );
 
   return response.data;

@@ -2,10 +2,7 @@ const Task = require("../models/Task");
 const User = require("../models/User");
 const Notification = require("../models/Notification");
 
-//======================================================
 // CREATE TASK
-//======================================================
-
 const createTask = async (req, res) => {
     try {
         const {
@@ -20,10 +17,8 @@ const createTask = async (req, res) => {
             participants,
         } = req.body;
 
-        //==================================================
-        // CHECK USER
-        //==================================================
 
+        // CHECK USER
         const user = await User.findById(req.user._id);
 
         if (!user) {
@@ -32,17 +27,13 @@ const createTask = async (req, res) => {
             });
         }
 
-        //==================================================
-        // GET USER PLAN
-        //==================================================
 
+        // GET USER PLAN------------------
         const userPlan =
             user.subscription?.plan || "free";
 
-        //==================================================
-        // TASK LIMITS
-        //==================================================
 
+        // TASK LIMITS
         const taskLimits = {
             free: 5,
             pro: 50,
@@ -52,17 +43,15 @@ const createTask = async (req, res) => {
         const taskLimit =
             taskLimits[userPlan] ?? 5;
 
-        //==================================================
+       
         // COUNT TASKS CREATED BY USER
-        //==================================================
-
-        const currentTaskCount =
+      const currentTaskCount =
             await Task.countDocuments({
                 createdBy: user._id,
             });
 
         console.log(
-            "========== TASK LIMIT CHECK =========="
+            "tASK LIMIT CHECK"
         );
 
         console.log(
@@ -91,12 +80,11 @@ const createTask = async (req, res) => {
         );
 
         console.log(
-            "======================================"
+            "  "
         );
 
-        //==================================================
         // CHECK TASK LIMIT
-        //==================================================
+      
 
         if (
             taskLimit !== Infinity &&
@@ -122,19 +110,15 @@ const createTask = async (req, res) => {
             });
         }
 
-        //==================================================
         // VALIDATE TITLE
-        //==================================================
-
-        if (!title || !title.trim()) {
+       if (!title || !title.trim()) {
             return res.status(400).json({
                 message: "Task title is required",
             });
         }
 
-        //==================================================
         // VALIDATE ASSIGNED USER
-        //==================================================
+       
 
         if (assignedTo) {
             const assignedUser =
@@ -148,9 +132,9 @@ const createTask = async (req, res) => {
             }
         }
 
-        //==================================================
+       
         // VALIDATE PARTICIPANTS
-        //==================================================
+        
 
         if (
             participants &&
@@ -174,9 +158,8 @@ const createTask = async (req, res) => {
             }
         }
 
-        //==================================================
         // CREATE TASK
-        //==================================================
+       
 
         const task = await Task.create({
             title: title.trim(),
@@ -213,22 +196,17 @@ const createTask = async (req, res) => {
             task._id
         );
 
-        //==================================================
+    
         // NOTIFICATIONS
-        //
-        // Notification errors should NOT make task
-        // creation fail.
-        //==================================================
+      
 
         try {
-            //================================================
-            // ASSIGNED USER NOTIFICATION
-            //================================================
+            
 
             if (
                 assignedTo &&
                 assignedTo.toString() !==
-                    user._id.toString()
+                user._id.toString()
             ) {
                 await Notification.create({
                     recipient:
@@ -252,9 +230,8 @@ const createTask = async (req, res) => {
                 );
             }
 
-            //================================================
             // PARTICIPANT NOTIFICATIONS
-            //================================================
+          
 
             if (
                 participants &&
@@ -263,19 +240,19 @@ const createTask = async (req, res) => {
                 const participantNotifications =
                     participants
 
-                        // Don't notify creator
+                       
                         .filter(
                             (participantId) =>
                                 participantId.toString() !==
                                 user._id.toString()
                         )
 
-                        // Don't notify assigned user twice
+                        
                         .filter(
                             (participantId) =>
                                 !assignedTo ||
                                 participantId.toString() !==
-                                    assignedTo.toString()
+                                assignedTo.toString()
                         )
 
                         .map(
@@ -289,8 +266,7 @@ const createTask = async (req, res) => {
                                 task:
                                     task._id,
 
-                                // IMPORTANT:
-                                // This value exists in Notification.js
+                               
                                 type:
                                     "participant_added",
 
@@ -319,12 +295,12 @@ const createTask = async (req, res) => {
             );
 
             // Task has already been created.
-            // Do not return 500 here.
+           
         }
 
-        //==================================================
+       
         // POPULATE TASK
-        //==================================================
+    
 
         let populatedTask;
 
@@ -354,9 +330,9 @@ const createTask = async (req, res) => {
             populatedTask = task;
         }
 
-        //==================================================
+        
         // SUCCESS RESPONSE
-        //==================================================
+       
 
         console.log(
             "TASK CREATION COMPLETED SUCCESSFULLY"
@@ -390,9 +366,9 @@ const createTask = async (req, res) => {
     }
 };
 
-//======================================================
+
 // GET ALL TASKS
-//======================================================
+
 
 const getTasks = async (req, res) => {
     try {
@@ -409,9 +385,9 @@ const getTasks = async (req, res) => {
         const userId =
             req.user._id;
 
-        //==================================================
+      
         // USER ACCESS
-        //==================================================
+        
 
         const query = {
             $or: [
@@ -430,9 +406,9 @@ const getTasks = async (req, res) => {
             ],
         };
 
-        //==================================================
+       
         // SEARCH
-        //==================================================
+        
 
         if (search) {
             query.$and = [
@@ -455,33 +431,25 @@ const getTasks = async (req, res) => {
             ];
         }
 
-        //==================================================
-        // STATUS FILTER
-        //==================================================
+       
 
         if (status) {
             query.status = status;
         }
 
-        //==================================================
-        // PRIORITY FILTER
-        //==================================================
+        
 
         if (priority) {
             query.priority = priority;
         }
 
-        //==================================================
-        // CATEGORY FILTER
-        //==================================================
+        
 
         if (category) {
             query.category = category;
         }
 
-        //==================================================
-        // PAGINATION
-        //==================================================
+        
 
         const currentPage =
             Math.max(
@@ -499,9 +467,7 @@ const getTasks = async (req, res) => {
             (currentPage - 1) *
             itemsPerPage;
 
-        //==================================================
-        // SORTING
-        //==================================================
+    
 
         let sortOption = {
             createdAt: -1,
@@ -513,18 +479,16 @@ const getTasks = async (req, res) => {
             };
         }
 
-        //==================================================
-        // COUNT TASKS
-        //==================================================
+      
 
         const totalTasks =
             await Task.countDocuments(
                 query
             );
 
-        //==================================================
+       
         // GET TASKS
-        //==================================================
+       
 
         const tasks =
             await Task.find(query)
@@ -550,9 +514,9 @@ const getTasks = async (req, res) => {
                 itemsPerPage
             );
 
-        //==================================================
+       
         // RESPONSE
-        //==================================================
+        
 
         return res.status(200).json({
             count:
@@ -595,9 +559,9 @@ const getTasks = async (req, res) => {
     }
 };
 
-//======================================================
+
 // GET SINGLE TASK
-//======================================================
+
 
 const getTask = async (req, res) => {
     try {
@@ -659,9 +623,9 @@ const getTask = async (req, res) => {
     }
 };
 
-//======================================================
+
 // UPDATE TASK
-//======================================================
+
 
 const updateTask = async (req, res) => {
     try {
@@ -693,9 +657,8 @@ const updateTask = async (req, res) => {
             participants,
         } = req.body;
 
-        //==================================================
         // STORE OLD VALUES
-        //==================================================
+     
 
         const oldAssignedTo =
             task.assignedTo
@@ -708,9 +671,9 @@ const updateTask = async (req, res) => {
                     participant.toString()
             );
 
-        //==================================================
+        
         // VALIDATE ASSIGNED USER
-        //==================================================
+      
 
         if (assignedTo) {
             const assignedUser =
@@ -726,9 +689,9 @@ const updateTask = async (req, res) => {
             }
         }
 
-        //==================================================
+       
         // VALIDATE PARTICIPANTS
-        //==================================================
+       
 
         if (participants) {
             const participantUsers =
@@ -750,9 +713,8 @@ const updateTask = async (req, res) => {
             }
         }
 
-        //==================================================
         // UPDATE FIELDS
-        //==================================================
+       
 
         task.title =
             title ??
@@ -799,9 +761,8 @@ const updateTask = async (req, res) => {
                 participants;
         }
 
-        //==================================================
-        // SYNCHRONIZE STATUS & PROGRESS
-        //==================================================
+      // STATUS & PROGRESS
+        
 
         if (
             task.progress ===
@@ -813,24 +774,20 @@ const updateTask = async (req, res) => {
 
         if (
             task.progress <
-                100 &&
+            100 &&
             task.status ===
-                "completed"
+            "completed"
         ) {
             task.status =
                 "pending";
         }
 
-        //==================================================
-        // SAVE TASK
-        //==================================================
+        
 
         const updatedTask =
             await task.save();
 
-        //==================================================
-        // NOTIFICATIONS
-        //==================================================
+        
 
         try {
             const newAssignedTo =
@@ -838,16 +795,16 @@ const updateTask = async (req, res) => {
                     ? updatedTask.assignedTo.toString()
                     : null;
 
-            //================================================
+            
             // NEW ASSIGNEE
-            //================================================
+        
 
             if (
                 newAssignedTo &&
                 newAssignedTo !==
-                    oldAssignedTo &&
+                oldAssignedTo &&
                 newAssignedTo !==
-                    req.user._id.toString()
+                req.user._id.toString()
             ) {
                 await Notification.create({
                     recipient:
@@ -867,9 +824,9 @@ const updateTask = async (req, res) => {
                 });
             }
 
-            //================================================
+          
             // NEW PARTICIPANTS
-            //================================================
+            
 
             const newParticipants =
                 updatedTask.participants.map(
@@ -884,9 +841,9 @@ const updateTask = async (req, res) => {
                             participantId
                         ) &&
                         participantId !==
-                            req.user._id.toString() &&
+                        req.user._id.toString() &&
                         participantId !==
-                            newAssignedTo
+                        newAssignedTo
                 );
 
             if (
@@ -905,8 +862,7 @@ const updateTask = async (req, res) => {
                             task:
                                 updatedTask._id,
 
-                            // IMPORTANT:
-                            // Must match Notification.js
+                            
                             type:
                                 "participant_added",
 
@@ -925,13 +881,12 @@ const updateTask = async (req, res) => {
                 notificationError
             );
 
-            // Do not fail task update because
-            // notification creation failed.
+           
         }
 
-        //==================================================
+     
         // POPULATE UPDATED TASK
-        //==================================================
+      
 
         let populatedTask;
 
@@ -962,9 +917,9 @@ const updateTask = async (req, res) => {
                 updatedTask;
         }
 
-        //==================================================
+       
         // RESPONSE
-        //==================================================
+       
 
         return res.status(200).json({
             message:
@@ -990,9 +945,9 @@ const updateTask = async (req, res) => {
     }
 };
 
-//======================================================
+
 // DELETE TASK
-//======================================================
+
 
 const deleteTask = async (req, res) => {
     try {
@@ -1014,9 +969,7 @@ const deleteTask = async (req, res) => {
 
         await task.deleteOne();
 
-        //==================================================
-        // DELETE RELATED NOTIFICATIONS
-        //==================================================
+        
 
         try {
             await Notification.deleteMany({
@@ -1051,9 +1004,9 @@ const deleteTask = async (req, res) => {
     }
 };
 
-//======================================================
+
 // TASK STATISTICS
-//======================================================
+
 
 const getTaskStats = async (req, res) => {
     try {
@@ -1130,9 +1083,6 @@ const getTaskStats = async (req, res) => {
     }
 };
 
-//======================================================
-// EXPORT
-//======================================================
 
 module.exports = {
     createTask,

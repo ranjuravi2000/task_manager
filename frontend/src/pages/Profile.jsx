@@ -17,16 +17,14 @@ import {
 function Profile() {
   const navigate = useNavigate();
 
-  // =========================================================
+
   // CURRENT USER
-  // =========================================================
 
   const currentUser =
     JSON.parse(localStorage.getItem("currentUser")) || {};
 
-  // =========================================================
+  
   // PLAN
-  // =========================================================
 
   const currentPlan =
     currentUser?.subscription?.plan ||
@@ -35,9 +33,8 @@ function Profile() {
 
   const planInfo = getPlan(currentPlan);
 
-  // =========================================================
+  
   // PROFILE STATES
-  // =========================================================
 
   const [profileImage, setProfileImage] = useState(
     currentUser?.profileImage || ""
@@ -49,9 +46,7 @@ function Profile() {
       ""
   );
 
-  // =========================================================
-  // PASSWORD STATES
-  // =========================================================
+  
 
   const [currentPassword, setCurrentPassword] =
     useState("");
@@ -72,9 +67,8 @@ function Profile() {
   const [showConfirmPassword, setShowConfirmPassword] =
     useState(false);
 
-  // =========================================================
+  
   // MESSAGES
-  // =========================================================
 
   const [profileMessage, setProfileMessage] =
     useState("");
@@ -85,9 +79,8 @@ function Profile() {
   const [passwordLoading, setPasswordLoading] =
     useState(false);
 
-  // =========================================================
+  
   // TASK USAGE
-  // =========================================================
 
   const allTasks =
     JSON.parse(localStorage.getItem("tasks")) || [];
@@ -114,9 +107,8 @@ function Profile() {
           100
         );
 
-  // =========================================================
+ 
   // MEMBER SINCE
-  // =========================================================
 
   const memberSince = currentUser?.createdAt
     ? new Date(
@@ -128,9 +120,8 @@ function Profile() {
       })
     : "N/A";
 
-  // =========================================================
+  
   // PROFILE IMAGE
-  // =========================================================
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
@@ -169,9 +160,8 @@ function Profile() {
     reader.readAsDataURL(file);
   };
 
-  // =========================================================
+  
   // UPDATE USERNAME
-  // =========================================================
 
   const handleUsernameUpdate = () => {
     setProfileMessage("");
@@ -198,9 +188,8 @@ function Profile() {
     );
   };
 
-  // =========================================================
+ 
   // CHANGE PASSWORD
-  // =========================================================
 
   const handlePasswordChange = async () => {
     setPasswordMessage("");
@@ -269,9 +258,8 @@ function Profile() {
     }
   };
 
-  // =========================================================
+  
   // LOGOUT
-  // =========================================================
 
   const handleLogout = () => {
     localStorage.removeItem("currentUser");
@@ -280,9 +268,7 @@ function Profile() {
     navigate("/");
   };
 
-  // =========================================================
-  // PASSWORD FIELD COMPONENT
-  // =========================================================
+ 
 
   const PasswordField = ({
     label,
@@ -299,9 +285,7 @@ function Profile() {
           {label}
         </label>
 
-        {/* IMPORTANT:
-            position-relative keeps the eye inside the input
-        */}
+        
         <div
           style={{
             position: "relative",
@@ -378,9 +362,7 @@ function Profile() {
     );
   };
 
-  // =========================================================
-  // UI
-  // =========================================================
+  
 
   return (
     <>
@@ -396,9 +378,7 @@ function Profile() {
 
         <div className="container">
 
-          {/* =================================================
-              PAGE TITLE
-          ================================================= */}
+          
 
           <div className="mb-4">
 
@@ -417,9 +397,7 @@ function Profile() {
 
           </div>
 
-          {/* =================================================
-              PROFILE HEADER
-          ================================================= */}
+          {/* --------------- PROFILE HEADER------*/}
 
           <div
             className="card border-0 shadow-sm mb-4"
@@ -566,15 +544,11 @@ function Profile() {
 
           </div>
 
-          {/* =================================================
-              MAIN CONTENT
-          ================================================= */}
+          {/* --------- MAIN CONTENT----- */}
 
           <div className="row g-4">
 
-            {/* =================================================
-                LEFT
-            ================================================= */}
+           
 
             <div className="col-lg-7">
 
@@ -667,8 +641,7 @@ function Profile() {
                     />
 
                     <small className="text-muted">
-                      Email cannot be changed
-                      here.
+                     
                     </small>
 
                   </div>
@@ -687,9 +660,7 @@ function Profile() {
 
               </div>
 
-              {/* =================================================
-                  SECURITY
-              ================================================= */}
+              
 
               <div
                 className="card border-0 shadow-sm"
@@ -808,9 +779,7 @@ function Profile() {
 
             </div>
 
-            {/* =================================================
-                RIGHT
-            ================================================= */}
+            
 
             <div className="col-lg-5">
 
@@ -987,9 +956,7 @@ function Profile() {
 
               </div>
 
-              {/* =================================================
-                  ACCOUNT
-              ================================================= */}
+              {/* ACCOUNT*/}
 
               <div
                 className="card border-0 shadow-sm"

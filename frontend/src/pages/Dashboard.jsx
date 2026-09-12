@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
 import {
   PieChart,
   Pie,
@@ -18,9 +17,8 @@ import API from "../api/axiosInstance";
 function Dashboard() {
   const navigate = useNavigate();
 
-  // =========================================================
-  // STATE
-  // =========================================================
+  
+  // ---------------STATE--------------//
 
   const [tasks, setTasks] = useState([]);
 
@@ -29,9 +27,8 @@ function Dashboard() {
   const [actionLoading, setActionLoading] =
     useState(null);
 
-  // =========================================================
-  // TASK STATISTICS
-  // =========================================================
+  
+  // TASK STATISTICS//
 
   const [stats, setStats] = useState({
     total: 0,
@@ -46,36 +43,32 @@ function Dashboard() {
     averageProgress: 0,
   });
 
-  // =========================================================
+
   // CURRENT USER
-  // =========================================================
 
   const currentUser =
     JSON.parse(
       localStorage.getItem("currentUser")
     ) || {};
 
-  // =========================================================
+ 
   // USER PLAN
-  // =========================================================
+ 
 
   const userPlan =
     currentUser?.plan || "free";
 
   const planInfo = getPlan(userPlan);
 
-  // =========================================================
+  
   // CURRENT USER ID
-  // =========================================================
 
   const currentUserId =
     currentUser?._id ||
     currentUser?.id ||
     null;
 
-  // =========================================================
-  // HELPERS
-  // =========================================================
+  
 
   const getUserId = (user) => {
     if (!user) return null;
@@ -87,9 +80,7 @@ function Dashboard() {
     return user;
   };
 
-  // =========================================================
-  // FORMAT STATUS
-  // =========================================================
+  
 
   const formatStatus = (status) => {
     if (!status) return "";
@@ -104,9 +95,7 @@ function Dashboard() {
       .join(" ");
   };
 
-  // =========================================================
-  // FORMAT PRIORITY
-  // =========================================================
+
 
   const formatPriority = (priority) => {
     if (!priority) return "";
@@ -117,9 +106,6 @@ function Dashboard() {
     );
   };
 
-  // =========================================================
-  // PRIORITY CLASS
-  // =========================================================
 
   const getPriorityClass = (priority) => {
     switch (priority) {
@@ -137,9 +123,7 @@ function Dashboard() {
     }
   };
 
-  // =========================================================
-  // STATUS CLASS
-  // =========================================================
+ 
 
   const getStatusClass = (status) => {
     switch (status) {
@@ -157,9 +141,8 @@ function Dashboard() {
     }
   };
 
-  // =========================================================
+  
   // FETCH TASKS
-  // =========================================================
 
   const fetchTasks = async () => {
     try {
@@ -208,9 +191,8 @@ function Dashboard() {
     }
   };
 
-  // =========================================================
+ 
   // FETCH STATISTICS
-  // =========================================================
 
   const fetchStats = async () => {
     try {
@@ -259,18 +241,15 @@ function Dashboard() {
     }
   };
 
-  // =========================================================
   // LOAD DASHBOARD DATA
-  // =========================================================
 
   useEffect(() => {
     fetchTasks();
     fetchStats();
   }, []);
 
-  // =========================================================
+  
   // STATISTICS VALUES
-  // =========================================================
 
   const totalTasks = stats.total;
 
@@ -292,9 +271,8 @@ function Dashboard() {
   const averageProgress =
     stats.averageProgress;
 
-  // =========================================================
+
   // MY OWN TASKS
-  // =========================================================
 
   const myOwnTasks = tasks.filter(
     (task) => {
@@ -310,9 +288,8 @@ function Dashboard() {
     }
   ).length;
 
-  // =========================================================
+ 
   // SHARED TASKS
-  // =========================================================
 
   const sharedTasks = tasks.filter(
     (task) => {
@@ -350,9 +327,8 @@ function Dashboard() {
     }
   ).length;
 
-  // =========================================================
+ 
   // CHART DATA
-  // =========================================================
 
   const chartData = [
     {
@@ -375,31 +351,14 @@ function Dashboard() {
     "#0d6efd",
   ];
 
-  // =========================================================
+ 
   // RECENT & IMPORTANT TASKS
-  // =========================================================
-  //
-  // Dashboard should NOT show every task.
-  //
-  // Priority:
-  //
-  // 1. Overdue active tasks
-  // 2. High priority active tasks
-  // 3. Recently updated tasks
-  // 4. Recently created tasks
-  //
-  // Maximum 5 tasks.
-  // =========================================================
-
-  const recentImportantTasks = [
+const recentImportantTasks = [
     ...tasks,
   ]
     .sort((a, b) => {
       const now = new Date();
 
-      // -----------------------------------------------------
-      // CHECK OVERDUE
-      // -----------------------------------------------------
 
       const isOverdue = (task) => {
         if (
@@ -417,9 +376,6 @@ function Dashboard() {
         );
       };
 
-      // -----------------------------------------------------
-      // OVERDUE SCORE
-      // -----------------------------------------------------
 
       const getOverdueScore = (
         task
@@ -429,9 +385,7 @@ function Dashboard() {
           : 0;
       };
 
-      // -----------------------------------------------------
-      // PRIORITY SCORE
-      // -----------------------------------------------------
+    
 
       const getPriorityScore = (
         task
@@ -467,9 +421,6 @@ function Dashboard() {
         return 0;
       };
 
-      // -----------------------------------------------------
-      // STATUS SCORE
-      // -----------------------------------------------------
 
       const getStatusScore = (
         task
@@ -491,9 +442,7 @@ function Dashboard() {
         return 0;
       };
 
-      // -----------------------------------------------------
-      // DATE SCORE
-      // -----------------------------------------------------
+     
 
       const getDate = (task) => {
         return new Date(
@@ -526,9 +475,9 @@ function Dashboard() {
     })
     .slice(0, 5);
 
-  // =========================================================
+  
   // CHECK OVERDUE
-  // =========================================================
+ 
 
   const isTaskOverdue = (task) => {
     if (
@@ -544,9 +493,9 @@ function Dashboard() {
     );
   };
 
-  // =========================================================
+  
   // COMPLETE / UNDO TASK
-  // =========================================================
+  
 
   const handleCompleteTask = async (
     task
@@ -634,9 +583,8 @@ function Dashboard() {
     }
   };
 
-  // =========================================================
+ 
   // DELETE TASK
-  // =========================================================
 
   const handleDeleteTask = async (
     taskId
@@ -704,30 +652,22 @@ function Dashboard() {
     }
   };
 
-  // =========================================================
-  // UI
-  // =========================================================
+  
 
   return (
     <div className="d-flex flex-column min-vh-100 bg-light">
 
-      {/* =====================================================
-          HEADER
-      ===================================================== */}
+     
 
       <Header showNav={true} />
 
-      {/* =====================================================
-          MAIN
-      ===================================================== */}
 
       <main className="flex-grow-1 py-4">
 
         <div className="container">
 
-          {/* =================================================
-              DASHBOARD HEADER
-          ================================================= */}
+          {/*
+              --------DASHBOARD HEADER----------- */}
 
           <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
 
@@ -770,9 +710,7 @@ function Dashboard() {
 
           </div>
 
-          {/* =================================================
-              PLAN USAGE
-          ================================================= */}
+          {/* ----------PLAN USAGE----------*/}
 
           <div className="card border-0 shadow-sm mb-4">
 
@@ -916,9 +854,7 @@ function Dashboard() {
 
           </div>
 
-          {/* =================================================
-              PROGRESS CARDS
-          ================================================= */}
+          {/* PROGRESS CARDS */}
 
           <div className="row g-3 mb-4">
 
@@ -1176,9 +1112,7 @@ function Dashboard() {
 
           </div>
 
-          {/* =================================================
-              TASKPILOT BANNER
-          ================================================= */}
+          {/* ---------TASKPILOT BANNER------------*/}
 
           <div
             className="card border-0 shadow-sm mb-4"
@@ -1231,9 +1165,7 @@ function Dashboard() {
 
           </div>
 
-          {/* =================================================
-              RECENT & IMPORTANT TASKS HEADER
-          ================================================= */}
+          
 
           <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
 
@@ -1374,9 +1306,7 @@ function Dashboard() {
 
                         <div className="card-body p-4">
 
-                          {/* =================================
-                              TITLE
-                          ================================= */}
+                          
 
                           <div className="d-flex justify-content-between align-items-start gap-2 mb-2">
 
@@ -1418,18 +1348,13 @@ function Dashboard() {
 
                           </div>
 
-                          {/* =================================
-                              DESCRIPTION
-                          ================================= */}
+                        
 
                           <p className="text-muted small mb-3">
                             {task.description ||
                               "No description available."}
                           </p>
 
-                          {/* =================================
-                              META
-                          ================================= */}
 
                           <div className="d-flex flex-wrap gap-2 mb-3">
 
@@ -1469,9 +1394,7 @@ function Dashboard() {
 
                           </div>
 
-                          {/* =================================
-                              PROGRESS
-                          ================================= */}
+                          
 
                           <div className="mb-3">
 
@@ -1514,9 +1437,6 @@ function Dashboard() {
 
                           </div>
 
-                          {/* =================================
-                              ASSIGNMENT
-                          ================================= */}
 
                           <div
                             className="border-top pt-3 mb-3"

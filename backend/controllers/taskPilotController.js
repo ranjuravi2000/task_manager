@@ -7,8 +7,6 @@ const {
 
 
 // TASKPILOT AI
-
-
 const getTaskPilotAnalysis = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -44,10 +42,8 @@ const getTaskPilotAnalysis = async (req, res) => {
       });
     }
 
-    // --------------------------------------------------
+  
     // PRIORITY WEIGHTS
-    // --------------------------------------------------
-
     const priorityWeight = {
       high: 30,
       medium: 20,
@@ -56,17 +52,15 @@ const getTaskPilotAnalysis = async (req, res) => {
 
     const now = new Date();
 
-    // --------------------------------------------------
-    // START OF TODAY
-    // --------------------------------------------------
+
 
     const today = new Date(now);
 
     today.setHours(0, 0, 0, 0);
 
-    // --------------------------------------------------
+    
     // SCORE EVERY TASK
-    // --------------------------------------------------
+    
 
     const scoredTasks = tasks.map((task) => {
       const priority =
@@ -80,9 +74,7 @@ const getTaskPilotAnalysis = async (req, res) => {
         task.createdAt
       );
 
-      // --------------------------------------------------
-      // HOW MANY DAYS TASK HAS BEEN PENDING
-      // --------------------------------------------------
+     
 
       const pendingDays = Math.max(
         0,
@@ -92,9 +84,8 @@ const getTaskPilotAnalysis = async (req, res) => {
         )
       );
 
-      // --------------------------------------------------
       // DEADLINE INFORMATION
-      // --------------------------------------------------
+      
 
       const dueDate = task.dueDate
         ? new Date(task.dueDate)
@@ -133,9 +124,9 @@ const getTaskPilotAnalysis = async (req, res) => {
         }
       }
 
-      // --------------------------------------------------
+     
       // CALCULATE TASK SCORE
-      // --------------------------------------------------
+     
 
       let score = 0;
 
@@ -195,9 +186,9 @@ const getTaskPilotAnalysis = async (req, res) => {
         score += 3;
       }
 
-      // --------------------------------------------------
+      
       // RETURN SCORED TASK
-      // --------------------------------------------------
+      
 
       return {
         ...task.toObject(),
@@ -211,23 +202,23 @@ const getTaskPilotAnalysis = async (req, res) => {
       };
     });
 
-    // --------------------------------------------------
+    
     // SORT TASKS BY SCORE
-    // --------------------------------------------------
+    
 
     scoredTasks.sort(
       (a, b) => b.score - a.score
     );
 
-    // --------------------------------------------------
+  
     // SELECT MOST IMPORTANT TASK
-    // --------------------------------------------------
+    
 
     const topTask = scoredTasks[0];
 
-    // --------------------------------------------------
+    
     // GENERATE GEMINI AI ANALYSIS
-    // --------------------------------------------------
+    
 
     const analysis =
       await generateTaskPilotAnalysis(
@@ -339,9 +330,7 @@ const getTaskPilotAnalysis = async (req, res) => {
   }
 };
 
-// --------------------------------------------------
-// EXPORT
-// --------------------------------------------------
+
 
 module.exports = {
   getTaskPilotAnalysis,

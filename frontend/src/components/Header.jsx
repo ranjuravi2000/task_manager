@@ -18,22 +18,19 @@ import {
 function Header({ showNav = false }) {
   const navigate = useNavigate();
 
-  // =========================================================
-  // CURRENT USER
-  // =========================================================
+  
+  // CURRENT USER------------
+ 
 
   const currentUser =
     JSON.parse(localStorage.getItem("currentUser")) || null;
 
-  // =========================================================
-  // NOTIFICATION COUNT
-  // =========================================================
 
   const [notificationCount, setNotificationCount] = useState(0);
 
-  // =========================================================
-  // COLLABORATION REQUEST COUNT
-  // =========================================================
+ 
+  // COLLABORATION REQUEST COUNT----------
+  
 
   const allRequests =
     JSON.parse(
@@ -46,10 +43,8 @@ function Header({ showNav = false }) {
       request.status === "Pending"
   ).length;
 
-  // =========================================================
-  // USER PLAN
-  // =========================================================
-
+  
+  // USER PLAN---------
   const userPlan = currentUser?.plan || "free";
 
   const planInfo = getPlan(userPlan);
@@ -61,9 +56,9 @@ function Header({ showNav = false }) {
       ultimate: "success",
     }[userPlan] || "secondary";
 
-  // =========================================================
+ 
   // GET NOTIFICATION COUNT
-  // =========================================================
+  
 
   const fetchNotificationCount = async () => {
     try {
@@ -99,9 +94,9 @@ function Header({ showNav = false }) {
     }
   };
 
-  // =========================================================
-  // LOAD NOTIFICATIONS
-  // =========================================================
+  
+  // LOAD NOTIFICATIONS--------
+ 
 
   useEffect(() => {
     if (!showNav || !currentUser?._id) {
@@ -120,9 +115,7 @@ function Header({ showNav = false }) {
     };
   }, [showNav, currentUser?._id]);
 
-  // =========================================================
-  // LOGOUT
-  // =========================================================
+  
 
   const logout = () => {
     // Remove Bootstrap backdrop
@@ -147,9 +140,9 @@ function Header({ showNav = false }) {
     navigate("/");
   };
 
-  // =========================================================
-  // ACTIVE NAVIGATION BUTTON
-  // =========================================================
+  
+  // ACTIVE NAVIGATION BUTTON---------
+  
 
   const navClass = ({ isActive }) =>
     `btn taskify-nav-button ${isActive
@@ -157,22 +150,15 @@ function Header({ showNav = false }) {
       : "btn-outline-light"
     }`;
 
-  // =========================================================
-  // UI
-  // =========================================================
+  
 
   return (
     <>
-      {/* =====================================================
-          HEADER
-      ===================================================== */}
+      
 
       <nav className="taskify-navbar">
         <div className="taskify-navbar-inner">
 
-          {/* =================================================
-              BRAND
-          ================================================= */}
 
           <div className="taskify-brand-section">
 
@@ -195,16 +181,11 @@ function Header({ showNav = false }) {
 
           </div>
 
-          {/* =================================================
-              NAVIGATION
-          ================================================= */}
 
           {showNav && currentUser && (
             <div className="taskify-navigation">
 
-              {/* =================================================
-                  USER
-              ================================================= */}
+             
 
               <span className="taskify-user">
                 <FaUser size={14} />
@@ -216,9 +197,6 @@ function Header({ showNav = false }) {
                 </span>
               </span>
 
-              {/* =================================================
-                  PLAN
-              ================================================= */}
 
               <span
                 className={`badge bg-${planBadgeVariant} taskify-plan`}
@@ -226,9 +204,6 @@ function Header({ showNav = false }) {
                 {planInfo?.label || "Free"} Plan
               </span>
 
-              {/* =================================================
-                  DASHBOARD
-              ================================================= */}
 
               <NavLink
                 to="/dashboard"
@@ -241,9 +216,6 @@ function Header({ showNav = false }) {
                 </span>
               </NavLink>
 
-              {/* =================================================
-                  MY TASKS
-              ================================================= */}
 
               <NavLink
                 to="/my-tasks"
@@ -256,9 +228,6 @@ function Header({ showNav = false }) {
                 </span>
               </NavLink>
 
-              {/* =================================================
-                  CREATE TASK
-              ================================================= */}
 
               <NavLink
                 to="/create-task"
@@ -271,9 +240,7 @@ function Header({ showNav = false }) {
                 </span>
               </NavLink>
 
-              {/* =================================================
-                  NOTIFICATIONS
-              ================================================= */}
+           
 
               <NavLink
                 to="/notifications"
@@ -296,9 +263,7 @@ function Header({ showNav = false }) {
                 )}
               </NavLink>
 
-              {/* =================================================
-                  REQUESTS
-              ================================================= */}
+             
 
               <NavLink
                 to="/collaboration-requests"
@@ -321,9 +286,7 @@ function Header({ showNav = false }) {
                 )}
               </NavLink>
 
-              {/* =================================================
-                  SENT
-              ================================================= */}
+              
 
               <NavLink
                 to="/sent-requests"
@@ -336,9 +299,7 @@ function Header({ showNav = false }) {
                 </span>
               </NavLink>
 
-              {/* =================================================
-                  PROFILE
-              ================================================= */}
+            
 
               <NavLink
                 to="/profile"
@@ -351,9 +312,6 @@ function Header({ showNav = false }) {
                 </span>
               </NavLink>
 
-              {/* =================================================
-                  LOGOUT
-              ================================================= */}
 
               <button
                 type="button"
@@ -373,9 +331,6 @@ function Header({ showNav = false }) {
         </div>
       </nav>
 
-      {/* =====================================================
-          LOGOUT MODAL
-      ===================================================== */}
 
       <div
         className="modal fade"
@@ -443,9 +398,7 @@ function Header({ showNav = false }) {
         </div>
       </div>
 
-      {/* =====================================================
-          HEADER CSS
-      ===================================================== */}
+     
 
       <style>
         {`

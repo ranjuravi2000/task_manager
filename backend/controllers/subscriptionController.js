@@ -28,8 +28,6 @@ const updateSubscription = async (req, res) => {
     user.subscription.status = "active";
     user.subscription.startDate = new Date();
 
-    // Free plan does not have an expiry date
-    // Paid plan expiry will be handled later with payment
     if (plan === "free") {
       user.subscription.endDate = null;
     }

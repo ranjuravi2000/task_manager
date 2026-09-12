@@ -1,10 +1,8 @@
 
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-// --------------------------------------------------
-// CHECK GEMINI API KEY
-// --------------------------------------------------
 
+// CHECK GEMINI API KEY
 const apiKey = process.env.GEMINI_API_KEY;
 
 console.log(
@@ -22,9 +20,9 @@ const genAI = apiKey
   : null;
 
 
-// --------------------------------------------------
+
 // FALLBACK ANALYSIS
-// --------------------------------------------------
+
 
 const fallbackAnalysis = (task) => {
   let risk = "Low Risk";
@@ -43,9 +41,9 @@ const fallbackAnalysis = (task) => {
   }
 
 
-  // --------------------------------------------------
+
   // DEADLINE STATUS
-  // --------------------------------------------------
+ 
 
   let deadlineMessage = "The task has no immediate deadline";
 
@@ -69,9 +67,8 @@ const fallbackAnalysis = (task) => {
   }
 
 
-  // --------------------------------------------------
   // DYNAMIC RECOVERY PLAN
-  // --------------------------------------------------
+ 
 
   let recoveryPlan;
 
@@ -156,9 +153,9 @@ const fallbackAnalysis = (task) => {
   }
 
 
-  // --------------------------------------------------
+ 
   // FALLBACK RESPONSE
-  // --------------------------------------------------
+  
 
   return {
     risk,
@@ -216,16 +213,16 @@ const fallbackAnalysis = (task) => {
 };
 
 
-// --------------------------------------------------
+
 // GENERATE TASKPILOT AI ANALYSIS
-// --------------------------------------------------
+
 
 const generateTaskPilotAnalysis = async (task) => {
   try {
 
-    // --------------------------------------------------
-    // CHECK API KEY
-    // --------------------------------------------------
+    
+    // checking API key-------//
+    
 
     if (!apiKey) {
       console.error(
@@ -236,18 +233,18 @@ const generateTaskPilotAnalysis = async (task) => {
     }
 
 
-    // --------------------------------------------------
+    
     // GEMINI MODEL
-    // --------------------------------------------------
+    
 
     const model = genAI.getGenerativeModel({
       model: "gemini-2.0-flash",
     });
 
 
-    // --------------------------------------------------
+   
     // DETERMINE DEADLINE STATUS
-    // --------------------------------------------------
+   
 
     let deadlineStatus = "No due date";
 
@@ -271,9 +268,8 @@ const generateTaskPilotAnalysis = async (task) => {
     }
 
 
-    // --------------------------------------------------
     // PROMPT
-    // --------------------------------------------------
+    
 
     const prompt = `
 You are TaskPilot AI, an intelligent task management assistant.
@@ -545,10 +541,6 @@ Use exactly this structure:
 `;
 
 
-    // --------------------------------------------------
-    // CALL GEMINI
-    // --------------------------------------------------
-
     const result = await model.generateContent(prompt);
 
     const response = result.response;
@@ -556,9 +548,6 @@ Use exactly this structure:
     let text = response.text().trim();
 
 
-    // --------------------------------------------------
-    // REMOVE MARKDOWN
-    // --------------------------------------------------
 
     text = text
       .replace(/^```json\s*/i, "")
@@ -567,16 +556,11 @@ Use exactly this structure:
       .trim();
 
 
-    // --------------------------------------------------
-    // PARSE JSON
-    // --------------------------------------------------
-
     const analysis = JSON.parse(text);
 
 
-    // --------------------------------------------------
+    
     // VALIDATE RESPONSE
-    // --------------------------------------------------
 
     if (
       !analysis.risk ||
@@ -616,9 +600,9 @@ Use exactly this structure:
     }
 
 
-    // --------------------------------------------------
+   
     // SUCCESS
-    // --------------------------------------------------
+   
 
     console.log(
       "TaskPilot Gemini analysis generated successfully"
@@ -638,9 +622,6 @@ Use exactly this structure:
 };
 
 
-// --------------------------------------------------
-// EXPORT
-// --------------------------------------------------
 
 module.exports = {
   generateTaskPilotAnalysis,

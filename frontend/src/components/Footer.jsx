@@ -8,7 +8,7 @@ function Footer() {
       <div className="container">
         <div className="row align-items-center">
 
-          {/* Logo / Description */}
+         
           <div className="col-12 col-md-4 text-center text-md-start mb-3 mb-md-0">
             <h5 className="fw-bold mb-1">✔㆜αടƙι⨍ყ</h5>
 
@@ -17,7 +17,7 @@ function Footer() {
             </small>
           </div>
 
-          {/* Footer Links */}
+         
           <div className="col-12 col-md-4 text-center mb-3 mb-md-0">
             <div className="d-flex justify-content-center align-items-center gap-3 flex-wrap">
 
@@ -48,7 +48,7 @@ function Footer() {
             </div>
           </div>
 
-          {/* Copyright */}
+        
           <div className="col-12 col-md-4 text-center text-md-end">
             <small className="text-white-50">
               © {year} Taskify. All rights reserved.

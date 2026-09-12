@@ -28,9 +28,8 @@ import {
 function CreateTask() {
   const navigate = useNavigate();
 
-  // --------------------------------------------------
+  
   // CURRENT LOGGED-IN USER
-  // --------------------------------------------------
 
   const currentUser =
     JSON.parse(localStorage.getItem("currentUser")) || {};
@@ -40,17 +39,15 @@ function CreateTask() {
 
   const userPlan = currentUser?.plan || "free";
 
-  // --------------------------------------------------
+ 
   // PLAN
-  // --------------------------------------------------
 
   const planDetails = getPlan(userPlan);
 
   const taskLimit = planDetails?.taskLimit;
 
-  // --------------------------------------------------
+  
   // TASK COUNT
-  // --------------------------------------------------
 
   const [myTaskCount, setMyTaskCount] = useState(0);
   const [checkingLimit, setCheckingLimit] = useState(true);
@@ -60,9 +57,8 @@ function CreateTask() {
     taskLimit !== Infinity &&
     myTaskCount >= taskLimit;
 
-  // --------------------------------------------------
+  
   // TASK STATE
-  // --------------------------------------------------
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -72,31 +68,26 @@ function CreateTask() {
 
   const [assignedTo, setAssignedTo] = useState("");
 
-  // --------------------------------------------------
+ 
   // USERS
-  // --------------------------------------------------
 
   const [users, setUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
 
-  // --------------------------------------------------
+  
   // PARTICIPANTS
-  // --------------------------------------------------
 
   const [participants, setParticipants] = useState([]);
   const [participantInput, setParticipantInput] = useState("");
   const [participantError, setParticipantError] = useState("");
 
-  // --------------------------------------------------
+ 
   // MESSAGE / LOADING
-  // --------------------------------------------------
 
   const [message, setMessage] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
-  // --------------------------------------------------
-  // FETCH MY TASK COUNT
-  // --------------------------------------------------
+  
 
   const fetchTaskCount = async () => {
     try {
@@ -111,9 +102,8 @@ function CreateTask() {
         response.data?.data ||
         [];
 
-      // ----------------------------------------------
-      // COUNT ONLY TASKS CREATED BY CURRENT USER
-      // ----------------------------------------------
+   
+      // ---------COUNT ONLY TASKS CREATED BY CURRENT USER-----------//
 
       const myTasks = tasks.filter((task) => {
         const creatorId =
@@ -158,9 +148,7 @@ function CreateTask() {
     }
   };
 
-  // --------------------------------------------------
   // FETCH USERS
-  // --------------------------------------------------
 
   const fetchUsers = async () => {
     try {
@@ -198,18 +186,14 @@ function CreateTask() {
     }
   };
 
-  // --------------------------------------------------
-  // LOAD DATA
-  // --------------------------------------------------
 
   useEffect(() => {
     fetchUsers();
     fetchTaskCount();
   }, []);
 
-  // --------------------------------------------------
+  
   // FIND USER
-  // --------------------------------------------------
 
   const findUser = (value) => {
     const trimmedValue =
@@ -229,9 +213,8 @@ function CreateTask() {
     });
   };
 
-  // --------------------------------------------------
-  // ADD PARTICIPANT
-  // --------------------------------------------------
+  
+  // ADD PARTICIPANT---------------//
 
   const addParticipant = () => {
     const trimmed =
@@ -285,9 +268,8 @@ function CreateTask() {
     setParticipantError("");
   };
 
-  // --------------------------------------------------
-  // REMOVE PARTICIPANT
-  // --------------------------------------------------
+  
+  // REMOVE PARTICIPANT------------//
 
   const removeParticipant = (userId) => {
     setParticipants((prev) =>
@@ -297,9 +279,8 @@ function CreateTask() {
     );
   };
 
-  // --------------------------------------------------
-  // GET PARTICIPANT DETAILS
-  // --------------------------------------------------
+  
+  // GET PARTICIPANT DETAILS------------//
 
   const getParticipantDetails = (
     userId
@@ -310,9 +291,8 @@ function CreateTask() {
     );
   };
 
-  // --------------------------------------------------
+  
   // SAVE TASK
-  // --------------------------------------------------
 
   const saveTask = async () => {
     if (isSaving) {
@@ -324,9 +304,8 @@ function CreateTask() {
     try {
       setIsSaving(true);
 
-      // ----------------------------------------------
+      
       // GET LATEST TASK LIST
-      // ----------------------------------------------
 
       const tasksResponse =
         await API.get("/tasks");
@@ -341,9 +320,8 @@ function CreateTask() {
         tasksResponse.data?.data ||
         [];
 
-      // ----------------------------------------------
+      
       // COUNT ONLY CURRENT USER'S CREATED TASKS
-      // ----------------------------------------------
 
       const myTasks =
         tasks.filter((task) => {
@@ -377,9 +355,6 @@ function CreateTask() {
         currentTaskCount
       );
 
-      // ----------------------------------------------
-      // FRONTEND PLAN LIMIT CHECK
-      // ----------------------------------------------
 
       if (
         typeof taskLimit === "number" &&
@@ -395,9 +370,7 @@ function CreateTask() {
         return;
       }
 
-      // ----------------------------------------------
-      // VALIDATION
-      // ----------------------------------------------
+     
 
       if (!title.trim()) {
         setMessage(
@@ -420,9 +393,9 @@ function CreateTask() {
         return;
       }
 
-      // ----------------------------------------------
+      
       // TASK DATA
-      // ----------------------------------------------
+     
 
       const taskData = {
         title: title.trim(),
@@ -469,9 +442,7 @@ function CreateTask() {
         response.data
       );
 
-      // ----------------------------------------------
-      // SUCCESS
-      // ----------------------------------------------
+     
 
       setMyTaskCount(
         currentTaskCount + 1
@@ -481,9 +452,7 @@ function CreateTask() {
         "Task created successfully!"
       );
 
-      // ----------------------------------------------
-      // GO TO DASHBOARD
-      // ----------------------------------------------
+  
 
       setTimeout(() => {
         navigate("/dashboard");
@@ -525,9 +494,8 @@ function CreateTask() {
         return;
       }
 
-      // ----------------------------------------------
+     
       // TASK LIMIT REACHED
-      // ----------------------------------------------
 
       if (
         error.response?.status === 403
@@ -574,9 +542,7 @@ function CreateTask() {
         return;
       }
 
-      // ----------------------------------------------
-      // OTHER BACKEND ERRORS
-      // ----------------------------------------------
+     
 
       if (
         error.response?.data?.message
@@ -588,9 +554,7 @@ function CreateTask() {
         return;
       }
 
-      // ----------------------------------------------
-      // NETWORK ERROR
-      // ----------------------------------------------
+      
 
       if (!error.response) {
         setMessage(
@@ -600,9 +564,7 @@ function CreateTask() {
         return;
       }
 
-      // ----------------------------------------------
-      // UNKNOWN ERROR
-      // ----------------------------------------------
+      
 
       setMessage(
         "Failed to create task. Please try again."
@@ -613,16 +575,11 @@ function CreateTask() {
     }
   };
 
-  // --------------------------------------------------
-  // DISPLAY LIMIT
-  // --------------------------------------------------
-
+  
   const displayLimit =
     formatLimit(taskLimit);
 
-  // --------------------------------------------------
-  // UI
-  // --------------------------------------------------
+ 
 
   return (
     <>
