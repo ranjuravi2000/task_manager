@@ -1703,7 +1703,7 @@ ${getShareUrl()}`;
         </div>
       </main>
 
-      <Footer />
+      
     </div>
   );
 }

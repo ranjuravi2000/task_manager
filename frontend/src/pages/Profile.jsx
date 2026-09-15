@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
-import Footer from "../components/Footer";
 import { getPlan, formatLimit } from "../data/plans";
 import API from "../api/axiosInstance";
+
 import {
   FaEye,
   FaEyeSlash,
@@ -12,19 +12,24 @@ import {
   FaLock,
   FaCreditCard,
   FaSignOutAlt,
+  FaInfoCircle,
+  FaShieldAlt,
+  FaEnvelope,
 } from "react-icons/fa";
 
 function Profile() {
   const navigate = useNavigate();
 
-
+  // =========================
   // CURRENT USER
+  // =========================
 
   const currentUser =
     JSON.parse(localStorage.getItem("currentUser")) || {};
 
-  
+  // =========================
   // PLAN
+  // =========================
 
   const currentPlan =
     currentUser?.subscription?.plan ||
@@ -33,8 +38,9 @@ function Profile() {
 
   const planInfo = getPlan(currentPlan);
 
-  
+  // =========================
   // PROFILE STATES
+  // =========================
 
   const [profileImage, setProfileImage] = useState(
     currentUser?.profileImage || ""
@@ -45,8 +51,6 @@ function Profile() {
       currentUser?.username ||
       ""
   );
-
-  
 
   const [currentPassword, setCurrentPassword] =
     useState("");
@@ -67,8 +71,9 @@ function Profile() {
   const [showConfirmPassword, setShowConfirmPassword] =
     useState(false);
 
-  
+  // =========================
   // MESSAGES
+  // =========================
 
   const [profileMessage, setProfileMessage] =
     useState("");
@@ -79,8 +84,9 @@ function Profile() {
   const [passwordLoading, setPasswordLoading] =
     useState(false);
 
-  
+  // =========================
   // TASK USAGE
+  // =========================
 
   const allTasks =
     JSON.parse(localStorage.getItem("tasks")) || [];
@@ -107,8 +113,9 @@ function Profile() {
           100
         );
 
- 
+  // =========================
   // MEMBER SINCE
+  // =========================
 
   const memberSince = currentUser?.createdAt
     ? new Date(
@@ -120,8 +127,9 @@ function Profile() {
       })
     : "N/A";
 
-  
+  // =========================
   // PROFILE IMAGE
+  // =========================
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
@@ -160,8 +168,9 @@ function Profile() {
     reader.readAsDataURL(file);
   };
 
-  
+  // =========================
   // UPDATE USERNAME
+  // =========================
 
   const handleUsernameUpdate = () => {
     setProfileMessage("");
@@ -188,8 +197,9 @@ function Profile() {
     );
   };
 
- 
+  // =========================
   // CHANGE PASSWORD
+  // =========================
 
   const handlePasswordChange = async () => {
     setPasswordMessage("");
@@ -239,7 +249,6 @@ function Profile() {
       setNewPassword("");
       setConfirmPassword("");
 
-      // Hide passwords again after successful change
       setShowCurrentPassword(false);
       setShowNewPassword(false);
       setShowConfirmPassword(false);
@@ -258,8 +267,9 @@ function Profile() {
     }
   };
 
-  
+  // =========================
   // LOGOUT
+  // =========================
 
   const handleLogout = () => {
     localStorage.removeItem("currentUser");
@@ -268,7 +278,9 @@ function Profile() {
     navigate("/");
   };
 
- 
+  // =========================
+  // PASSWORD FIELD
+  // =========================
 
   const PasswordField = ({
     label,
@@ -280,19 +292,16 @@ function Profile() {
   }) => {
     return (
       <div className="mb-3">
-
         <label className="form-label fw-semibold">
           {label}
         </label>
 
-        
         <div
           style={{
             position: "relative",
             width: "100%",
           }}
         >
-
           <input
             type={
               showPassword
@@ -311,7 +320,6 @@ function Profile() {
             }}
           />
 
-          {/* EYE BUTTON */}
           <button
             type="button"
             onClick={() =>
@@ -329,24 +337,17 @@ function Profile() {
               top: "50%",
               right: "12px",
               transform: "translateY(-50%)",
-
               border: "none",
               background: "transparent",
-
               padding: "5px",
               margin: "0",
-
               width: "30px",
               height: "30px",
-
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-
               color: "#6c757d",
-
               cursor: "pointer",
-
               zIndex: 5,
             }}
           >
@@ -356,13 +357,10 @@ function Profile() {
               <FaEye size={16} />
             )}
           </button>
-
         </div>
       </div>
     );
   };
-
-  
 
   return (
     <>
@@ -372,21 +370,16 @@ function Profile() {
         style={{
           background: "#f6f7fb",
           minHeight: "calc(100vh - 80px)",
-          padding: "45px 0",
+          padding: "35px 0",
         }}
       >
-
         <div className="container">
 
-          
-
+          {/* PAGE HEADER */}
           <div className="mb-4">
-
             <h2
               className="fw-bold mb-1"
-              style={{
-                color: "#212529",
-              }}
+              style={{ color: "#212529" }}
             >
               My Profile
             </h2>
@@ -394,26 +387,19 @@ function Profile() {
             <p className="text-muted mb-0">
               Manage your account and preferences
             </p>
-
           </div>
 
-          {/* --------------- PROFILE HEADER------*/}
-
+          {/* PROFILE HEADER */}
           <div
             className="card border-0 shadow-sm mb-4"
-            style={{
-              borderRadius: "16px",
-            }}
+            style={{ borderRadius: "16px" }}
           >
-
             <div className="card-body p-4">
 
               <div className="row align-items-center">
 
                 {/* PROFILE IMAGE */}
-
                 <div className="col-auto">
-
                   <div
                     style={{
                       width: "105px",
@@ -421,9 +407,7 @@ function Profile() {
                       position: "relative",
                     }}
                   >
-
                     {profileImage ? (
-
                       <img
                         src={profileImage}
                         alt="Profile"
@@ -435,9 +419,7 @@ function Profile() {
                           border: "3px solid #eee",
                         }}
                       />
-
                     ) : (
-
                       <div
                         style={{
                           width: "105px",
@@ -453,42 +435,34 @@ function Profile() {
                         }}
                       >
                         {(
-                          currentUser?.name ||
-                          "U"
+                          currentUser?.name || "U"
                         )
                           .charAt(0)
                           .toUpperCase()}
                       </div>
-
                     )}
-
                   </div>
-
                 </div>
 
                 {/* USER INFORMATION */}
-
                 <div className="col mt-3 mt-md-0">
-
                   <div className="d-flex align-items-center flex-wrap gap-2">
-
-                    <h3 className="fw-bold mb-0">
+                    <h3 className="fw-bold mb-0 text-break">
                       {currentUser?.name ||
                         currentUser?.username ||
                         "User"}
                     </h3>
 
                     <span
-                      className={`badge bg-${planInfo?.color ||
-                        "secondary"} px-3 py-2`}
+                      className={`badge bg-${
+                        planInfo?.color || "secondary"
+                      } px-3 py-2`}
                     >
-                      {planInfo?.label ||
-                        "Free"}
+                      {planInfo?.label || "Free"}
                     </span>
-
                   </div>
 
-                  <p className="text-muted mb-1 mt-1">
+                  <p className="text-muted mb-1 mt-1 text-break">
                     {currentUser?.email ||
                       "No email"}
                   </p>
@@ -496,19 +470,14 @@ function Profile() {
                   <small className="text-muted">
                     Member since {memberSince}
                   </small>
-
                 </div>
 
                 {/* CHANGE PHOTO */}
-
                 <div className="col-12 col-md-auto mt-3 mt-md-0">
-
                   <label
                     htmlFor="profileImage"
                     className="btn btn-outline-dark"
-                    style={{
-                      cursor: "pointer",
-                    }}
+                    style={{ cursor: "pointer" }}
                   >
                     <FaCamera className="me-2" />
                     Change Photo
@@ -518,53 +487,36 @@ function Profile() {
                     id="profileImage"
                     type="file"
                     accept="image/*"
-                    onChange={
-                      handleImageChange
-                    }
-                    style={{
-                      display: "none",
-                    }}
+                    onChange={handleImageChange}
+                    style={{ display: "none" }}
                   />
-
                 </div>
 
               </div>
 
               {profileMessage && (
-
-                <div
-                  className="alert alert-info mt-4 mb-0"
-                >
+                <div className="alert alert-info mt-4 mb-0">
                   {profileMessage}
                 </div>
-
               )}
 
             </div>
-
           </div>
 
-          {/* --------- MAIN CONTENT----- */}
-
+          {/* MAIN CONTENT */}
           <div className="row g-4">
 
-           
-
-            <div className="col-lg-7">
+            {/* LEFT COLUMN */}
+            <div className="col-12 col-lg-7">
 
               {/* PERSONAL INFORMATION */}
-
               <div
                 className="card border-0 shadow-sm mb-4"
-                style={{
-                  borderRadius: "16px",
-                }}
+                style={{ borderRadius: "16px" }}
               >
-
                 <div className="card-body p-4">
 
                   <div className="d-flex align-items-center mb-4">
-
                     <div
                       className="me-3"
                       style={{
@@ -581,24 +533,18 @@ function Profile() {
                     </div>
 
                     <div>
-
                       <h5 className="fw-bold mb-1">
                         Personal Information
                       </h5>
 
                       <p className="text-muted small mb-0">
-                        Update your basic account
-                        information.
+                        Update your basic account information.
                       </p>
-
                     </div>
-
                   </div>
 
                   {/* USERNAME */}
-
                   <div className="mb-3">
-
                     <label className="form-label fw-semibold">
                       Username
                     </label>
@@ -608,21 +554,14 @@ function Profile() {
                       className="form-control"
                       value={username}
                       onChange={(e) =>
-                        setUsername(
-                          e.target.value
-                        )
+                        setUsername(e.target.value)
                       }
-                      style={{
-                        height: "44px",
-                      }}
+                      style={{ height: "44px" }}
                     />
-
                   </div>
 
                   {/* EMAIL */}
-
                   <div className="mb-4">
-
                     <label className="form-label fw-semibold">
                       Email
                     </label>
@@ -630,49 +569,31 @@ function Profile() {
                     <input
                       type="email"
                       className="form-control"
-                      value={
-                        currentUser?.email ||
-                        ""
-                      }
+                      value={currentUser?.email || ""}
                       disabled
-                      style={{
-                        height: "44px",
-                      }}
+                      style={{ height: "44px" }}
                     />
-
-                    <small className="text-muted">
-                     
-                    </small>
-
                   </div>
 
                   <button
                     type="button"
                     className="btn btn-dark px-4"
-                    onClick={
-                      handleUsernameUpdate
-                    }
+                    onClick={handleUsernameUpdate}
                   >
                     Save Changes
                   </button>
 
                 </div>
-
               </div>
 
-              
-
+              {/* SECURITY */}
               <div
                 className="card border-0 shadow-sm"
-                style={{
-                  borderRadius: "16px",
-                }}
+                style={{ borderRadius: "16px" }}
               >
-
                 <div className="card-body p-4">
 
                   <div className="d-flex align-items-center mb-4">
-
                     <div
                       className="me-3"
                       style={{
@@ -689,83 +610,53 @@ function Profile() {
                     </div>
 
                     <div>
-
                       <h5 className="fw-bold mb-1">
                         Security
                       </h5>
 
                       <p className="text-muted small mb-0">
-                        Change your password to
-                        keep your account secure.
+                        Change your password to keep your account secure.
                       </p>
-
                     </div>
-
                   </div>
-
-                  {/* CURRENT PASSWORD */}
 
                   <PasswordField
                     label="Current Password"
                     value={currentPassword}
-                    setValue={
-                      setCurrentPassword
-                    }
-                    showPassword={
-                      showCurrentPassword
-                    }
-                    setShowPassword={
-                      setShowCurrentPassword
-                    }
+                    setValue={setCurrentPassword}
+                    showPassword={showCurrentPassword}
+                    setShowPassword={setShowCurrentPassword}
                     placeholder="Enter current password"
                   />
-
-                  {/* NEW PASSWORD */}
 
                   <PasswordField
                     label="New Password"
                     value={newPassword}
                     setValue={setNewPassword}
-                    showPassword={
-                      showNewPassword
-                    }
-                    setShowPassword={
-                      setShowNewPassword
-                    }
+                    showPassword={showNewPassword}
+                    setShowPassword={setShowNewPassword}
                     placeholder="Enter new password"
                   />
-
-                  {/* CONFIRM PASSWORD */}
 
                   <PasswordField
                     label="Confirm New Password"
                     value={confirmPassword}
-                    setValue={
-                      setConfirmPassword
-                    }
-                    showPassword={
-                      showConfirmPassword
-                    }
-                    setShowPassword={
-                      setShowConfirmPassword
-                    }
+                    setValue={setConfirmPassword}
+                    showPassword={showConfirmPassword}
+                    setShowPassword={setShowConfirmPassword}
                     placeholder="Confirm new password"
                   />
 
                   {passwordMessage && (
-
                     <div className="alert alert-info small">
                       {passwordMessage}
                     </div>
-
                   )}
 
                   <button
                     type="button"
                     className="btn btn-dark px-4"
-                    onClick={
-                      handlePasswordChange
-                    }
+                    onClick={handlePasswordChange}
                     disabled={passwordLoading}
                   >
                     {passwordLoading
@@ -774,30 +665,21 @@ function Profile() {
                   </button>
 
                 </div>
-
               </div>
 
             </div>
 
-            
+            {/* RIGHT COLUMN */}
+            <div className="col-12 col-lg-5">
 
-            <div className="col-lg-5">
-
-              {/* =================================================
-                  SUBSCRIPTION
-              ================================================= */}
-
+              {/* SUBSCRIPTION */}
               <div
                 className="card border-0 shadow-sm mb-4"
-                style={{
-                  borderRadius: "16px",
-                }}
+                style={{ borderRadius: "16px" }}
               >
-
                 <div className="card-body p-4">
 
                   <div className="d-flex align-items-center mb-4">
-
                     <div
                       className="me-3"
                       style={{
@@ -814,114 +696,78 @@ function Profile() {
                     </div>
 
                     <div>
-
                       <h5 className="fw-bold mb-1">
                         Subscription
                       </h5>
 
                       <p className="text-muted small mb-0">
-                        Your current Taskify
-                        plan
+                        Your current Taskify plan
                       </p>
-
                     </div>
-
                   </div>
 
-                  <div className="d-flex justify-content-between align-items-center mb-3">
-
+                  <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                     <h4 className="fw-bold mb-0">
-                      {planInfo?.label ||
-                        "Free"}{" "}
-                      Plan
+                      {planInfo?.label || "Free"} Plan
                     </h4>
 
                     <span
-                      className={`badge bg-${planInfo?.color ||
-                        "secondary"} px-3 py-2`}
+                      className={`badge bg-${
+                        planInfo?.color || "secondary"
+                      } px-3 py-2`}
                     >
-                      {planInfo?.label ||
-                        "Free"}
+                      {planInfo?.label || "Free"}
                     </span>
-
                   </div>
 
-                  {currentUser?.subscription
-                    ?.status && (
-
+                  {currentUser?.subscription?.status && (
                     <div className="mb-4">
-
                       <span className="text-success small fw-semibold">
                         ●{" "}
                         {currentUser.subscription.status
                           .charAt(0)
                           .toUpperCase() +
-                          currentUser.subscription.status.slice(
-                            1
-                          )}
+                          currentUser.subscription.status.slice(1)}
                       </span>
-
                     </div>
-
                   )}
 
                   {/* TASK USAGE */}
-
                   <div className="mb-4">
-
                     <div className="d-flex justify-content-between mb-2">
-
                       <span className="small fw-semibold">
                         Task usage
                       </span>
 
                       <span className="small text-muted">
                         {myTasks.length} /{" "}
-                        {formatLimit(
-                          currentPlan
-                        )}
+                        {formatLimit(currentPlan)}
                       </span>
-
                     </div>
 
-                    {taskLimit !==
-                      Infinity && (
-
+                    {taskLimit !== Infinity && (
                       <div
                         className="progress"
-                        style={{
-                          height: "8px",
-                        }}
+                        style={{ height: "8px" }}
                       >
-
                         <div
                           className="progress-bar"
                           style={{
                             width: `${usagePercentage}%`,
                           }}
                         />
-
                       </div>
-
                     )}
-
                   </div>
 
                   {/* FEATURES */}
-
                   <div className="mb-4">
-
                     {planInfo?.features?.map(
-                      (
-                        feature,
-                        index
-                      ) => (
-
+                      (feature, index) => (
                         <div
                           key={index}
                           className="d-flex align-items-center mb-2"
                         >
-
                           <span className="text-success me-2">
                             ✓
                           </span>
@@ -929,17 +775,12 @@ function Profile() {
                           <span className="small">
                             {feature}
                           </span>
-
                         </div>
-
                       )
                     )}
-
                   </div>
 
-                  {currentPlan !==
-                    "ultimate" && (
-
+                  {currentPlan !== "ultimate" && (
                     <button
                       type="button"
                       className="btn btn-outline-dark w-100"
@@ -949,26 +790,98 @@ function Profile() {
                     >
                       Manage Plan
                     </button>
-
                   )}
 
                 </div>
-
               </div>
 
-              {/* ACCOUNT*/}
+              {/* APP INFORMATION */}
+              <div
+                className="card border-0 shadow-sm mb-4"
+                style={{ borderRadius: "16px" }}
+              >
+                <div className="card-body p-4">
 
+                  <h5 className="fw-bold mb-1">
+                    Taskify Information
+                  </h5>
+
+                  <p className="text-muted small mb-3">
+                    Learn more about Taskify and get support.
+                  </p>
+
+                  <div className="list-group list-group-flush">
+
+                    <Link
+                      to="/about"
+                      className="list-group-item list-group-item-action px-0 py-3 border-0"
+                    >
+                      <div className="d-flex align-items-center">
+                        <FaInfoCircle className="me-3 text-muted" />
+
+                        <div>
+                          <div className="fw-semibold">
+                            About Taskify
+                          </div>
+
+                          <small className="text-muted">
+                            Learn about Taskify and its features
+                          </small>
+                        </div>
+                      </div>
+                    </Link>
+
+                    <Link
+                      to="/privacy"
+                      className="list-group-item list-group-item-action px-0 py-3 border-0"
+                    >
+                      <div className="d-flex align-items-center">
+                        <FaShieldAlt className="me-3 text-muted" />
+
+                        <div>
+                          <div className="fw-semibold">
+                            Privacy Policy
+                          </div>
+
+                          <small className="text-muted">
+                            Learn how your information is handled
+                          </small>
+                        </div>
+                      </div>
+                    </Link>
+
+                    <Link
+                      to="/contact"
+                      className="list-group-item list-group-item-action px-0 py-3 border-0"
+                    >
+                      <div className="d-flex align-items-center">
+                        <FaEnvelope className="me-3 text-muted" />
+
+                        <div>
+                          <div className="fw-semibold">
+                            Contact Us
+                          </div>
+
+                          <small className="text-muted">
+                            Get help or send us your feedback
+                          </small>
+                        </div>
+                      </div>
+                    </Link>
+
+                  </div>
+
+                </div>
+              </div>
+
+              {/* ACCOUNT */}
               <div
                 className="card border-0 shadow-sm"
-                style={{
-                  borderRadius: "16px",
-                }}
+                style={{ borderRadius: "16px" }}
               >
-
                 <div className="card-body p-4">
 
                   <div className="d-flex align-items-center mb-3">
-
                     <div
                       className="me-3"
                       style={{
@@ -985,18 +898,14 @@ function Profile() {
                     </div>
 
                     <div>
-
                       <h5 className="fw-bold mb-1">
                         Account
                       </h5>
 
                       <p className="text-muted small mb-0">
-                        Manage your Taskify
-                        session.
+                        Manage your Taskify session.
                       </p>
-
                     </div>
-
                   </div>
 
                   <button
@@ -1009,18 +918,13 @@ function Profile() {
                   </button>
 
                 </div>
-
               </div>
 
             </div>
-
           </div>
 
         </div>
-
       </main>
-
-      <Footer />
     </>
   );
 }

@@ -376,7 +376,7 @@ function Register() {
 
       </div>
 
-      <Footer />
+      
     </div>
   );
 }

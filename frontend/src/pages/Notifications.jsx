@@ -416,7 +416,7 @@ function Notifications() {
         </div>
       </main>
 
-      <Footer />
+     
     </div>
   );
 }

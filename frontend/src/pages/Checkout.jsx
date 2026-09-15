@@ -636,7 +636,7 @@ function Checkout() {
         </div>
       </div>
 
-      <Footer />
+      
     </div>
   );
 }

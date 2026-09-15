@@ -686,7 +686,7 @@ function TaskPilotAI() {
 
 
 
-      <Footer />
+     
 
     </div>
   );

@@ -319,7 +319,7 @@ function SentRequests() {
         </div>
       </div>
 
-      <Footer />
+     
 
     </div>
   );

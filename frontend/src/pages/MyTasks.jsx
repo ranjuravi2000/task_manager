@@ -208,8 +208,7 @@ function MyTasks() {
 
       </div>
 
-      {/* Footer */}
-      <Footer />
+    
 
     </div>
   );

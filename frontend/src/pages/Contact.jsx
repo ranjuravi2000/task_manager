@@ -52,7 +52,7 @@ function Contact() {
         </div>
       </main>
 
-      <Footer />
+     
     </>
   );
 }

@@ -58,7 +58,7 @@ function Privacy() {
         </div>
       </main>
 
-      <Footer />
+     
     </>
   );
 }

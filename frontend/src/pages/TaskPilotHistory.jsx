@@ -422,7 +422,7 @@ function TaskPilotHistory() {
         </div>
       </main>
 
-      <Footer />
+     
     </div>
   );
 }

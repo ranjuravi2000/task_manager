@@ -212,7 +212,7 @@ function Pricing() {
         </div>
       </div>
 
-      <Footer />
+     
     </div>
   );
 }

@@ -462,7 +462,7 @@ function CollaborationRequests() {
         </div>
       </div>
 
-      <Footer />
+     
     </div>
   );
 }

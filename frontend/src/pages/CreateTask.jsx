@@ -1089,7 +1089,7 @@ function CreateTask() {
 
       </div>
 
-      <Footer />
+    
     </>
   );
 }
