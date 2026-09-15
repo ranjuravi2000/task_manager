@@ -17,6 +17,7 @@ function TaskDetails() {
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [showShareMenu, setShowShareMenu] = useState(false);
   const [commentLoading, setCommentLoading] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
@@ -458,6 +459,93 @@ function TaskDetails() {
       setDeleting(false);
     }
   };
+
+  // SOCIAL MEDIA SHARING
+
+  const getShareUrl = () => {
+    return window.location.href;
+  };
+
+  const getShareMessage = () => {
+    return `Task: ${task.title}
+Priority: ${task.priority}
+Status: ${formatStatus(task.status)}
+Progress: ${task.progress ?? 0}%
+
+View this task in Taskify:
+${getShareUrl()}`;
+  };
+
+  // WhatsApp
+  const shareOnWhatsApp = () => {
+    const message = encodeURIComponent(getShareMessage());
+
+    window.open(
+      `https://wa.me/?text=${message}`,
+      "_blank"
+    );
+  };
+
+  // LinkedIn
+  const shareOnLinkedIn = () => {
+    const url = encodeURIComponent(getShareUrl());
+
+    window.open(
+      `https://www.linkedin.com/sharing/share-offsite/?url=${url}`,
+      "_blank"
+    );
+  };
+
+  // Facebook
+  const shareOnFacebook = () => {
+    const url = encodeURIComponent(getShareUrl());
+
+    window.open(
+      `https://www.facebook.com/sharer/sharer.php?u=${url}`,
+      "_blank"
+    );
+  };
+
+  // X / Twitter
+  const shareOnX = () => {
+    const message = encodeURIComponent(
+      `Check out this Taskify task: ${task.title}`
+    );
+
+    const url = encodeURIComponent(getShareUrl());
+
+    window.open(
+      `https://twitter.com/intent/tweet?text=${message}&url=${url}`,
+      "_blank"
+    );
+  };
+
+  // Copy task link
+  const copyTaskLink = async () => {
+    try {
+      await navigator.clipboard.writeText(
+        getShareUrl()
+      );
+
+      setSuccessMessage(
+        "Task link copied to clipboard!"
+      );
+
+      setTimeout(() => {
+        setSuccessMessage("");
+      }, 3000);
+
+    } catch (error) {
+      console.error(
+        "Failed to copy task link:",
+        error
+      );
+
+      setError(
+        "Failed to copy task link."
+      );
+    }
+  };
   // HELPER FUNCTIONS
   const getUserName = (user) => {
     if (!user) return "Unknown User";
@@ -642,6 +730,70 @@ function TaskDetails() {
               >
                 🤖 Back to TaskPilot
               </button>
+
+              <div className="position-relative">
+
+                <button
+                  className="btn btn-outline-success"
+                  onClick={() =>
+                    setShowShareMenu(!showShareMenu)
+                  }
+                >
+                  🔗 Share Task
+                </button>
+
+                {showShareMenu && (
+                  <div
+                    className="position-absolute bg-white border rounded shadow p-3 mt-2"
+                    style={{
+                      minWidth: "220px",
+                      zIndex: 1000,
+                    }}
+                  >
+
+                    <h6 className="fw-bold mb-3">
+                      Share this task
+                    </h6>
+
+                    <button
+                      className="btn btn-success w-100 mb-2"
+                      onClick={shareOnWhatsApp}
+                    >
+                      💬 WhatsApp
+                    </button>
+
+                    <button
+                      className="btn btn-primary w-100 mb-2"
+                      onClick={shareOnLinkedIn}
+                    >
+                      💼 LinkedIn
+                    </button>
+
+                    <button
+                      className="btn btn-primary w-100 mb-2"
+                      onClick={shareOnFacebook}
+                    >
+                      📘 Facebook
+                    </button>
+
+                    <button
+                      className="btn btn-dark w-100 mb-2"
+                      onClick={shareOnX}
+                    >
+                      𝕏 X (Twitter)
+                    </button>
+
+                    <button
+                      className="btn btn-outline-secondary w-100"
+                      onClick={copyTaskLink}
+                    >
+                      🔗 Copy Task Link
+                    </button>
+
+                  </div>
+                )}
+
+              </div>
 
             </div>
 
